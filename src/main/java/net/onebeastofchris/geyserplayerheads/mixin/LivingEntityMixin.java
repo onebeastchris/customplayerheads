@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Credit for the following code goes to DakotaPride
- * https://github.com/DakotaPride/Incantation-Fabric/blob/master/src/main/java/net/dakotapride/incantation/mixin/LivingEntityMixin.java
+ * <a href="https://github.com/DakotaPride/Incantation-Fabric/blob/master/src/main/java/net/dakotapride/incantation/mixin/LivingEntityMixin.java">...</a>
  * **/
 
 @Mixin(LivingEntity.class)
@@ -31,7 +31,7 @@ public abstract class LivingEntityMixin extends Entity {
 	}
 
 	private void dropHead() {
-		dropItem(Items.PLAYER_HEAD.getDefaultStack().setNbt();
+		dropItem(Items.PLAYER_HEAD);
 	}
 
 	@Inject(method = "dropLoot", at = @At("TAIL"))

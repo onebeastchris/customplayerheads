@@ -18,10 +18,6 @@ public class GeyserPlayerHeads implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("gph");
 
-	public GeyserPlayerHeads() {
-		setXuidurl("https://api.geysermc.org/v2/xbox/xuid/");
-	}
-
 	@Override
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -31,45 +27,6 @@ public class GeyserPlayerHeads implements ModInitializer {
 		LOGGER.info("GeyserPlayerHeads starting now");
 	}
 
-	private String xuidurl;
-	public void setXuidurl(String pURL){
-		this.xuidurl = pURL;
-	}
-
-	public int getXuid(String pUsername){
-		var xuid = webRequest("https://api.geysermc.org/v2/xbox/xuid/"+pUsername);
-		if (xuid.has("xuid")){
-			return xuid.getAsInt();
-		} else if (xuid.has("message")){
-			return 0;
-		}
-		return -1;
-	}
-	public JsonObject getTextureId(int pXuid) {
-		if (pXuid <= 0) {
-				JsonObject getJson = (webRequest("https://api.geysermc.org/v2/skin/"+pXuid));
-				//return texture_id aus getSkinJson
-				JsonObject getSkinJson = getJson.getAsJsonObject("texture_id");
-				return getSkinJson;
-			}
-			// if message gets returned = player wasn't found
-			return null;
-		}
-
-	public JsonObject webRequest(String pUrl){
-		var client = newHttpClient();
-		var request = HttpRequest.newBuilder()
-				.uri(URI.create(pUrl))
-				.GET()
-				.build();
-		HttpResponse<String> resp;
-		try {
-			resp = client.send(request, BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		return new Gson().fromJson(resp.body(), JsonObject.class);
-	}
 }
 
 

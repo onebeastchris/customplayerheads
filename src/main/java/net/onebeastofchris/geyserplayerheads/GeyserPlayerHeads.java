@@ -16,7 +16,7 @@ public class GeyserPlayerHeads implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger("geyserplayerheads is loading");
+	public static final Logger LOGGER = LoggerFactory.getLogger("gph");
 
 	public GeyserPlayerHeads() {
 		setXuidurl("https://api.geysermc.org/v2/xbox/xuid/");
@@ -28,35 +28,33 @@ public class GeyserPlayerHeads implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("GeyserPlayerHeads starting now");
 	}
 
-	private String username = "Steve";
-	private JsonObject textureid;
 	private String xuidurl;
 	public void setXuidurl(String pURL){
 		this.xuidurl = pURL;
 	}
-	public JsonObject getTextureId() {
 
-
-		// get xuid as json object and convert xuid into Floodgate uuid
-		JsonObject getXuid;
-		getXuid = webRequest("https://api.geysermc.org/v2/xbox/xuid/"+username);
-		int xuid =  getXuid.getAsInt();
-
-		if (getXuid.get("xuid") != null) {
-			if (getXuid.has("xuid")) {
-				//get texture_id
-				JsonObject getJson = (webRequest("https://api.geysermc.org/v2/skin/"+xuid));
+	public int getXuid(String pUsername){
+		var xuid = webRequest("https://api.geysermc.org/v2/xbox/xuid/"+pUsername);
+		if (xuid.has("xuid")){
+			return xuid.getAsInt();
+		} else if (xuid.has("message")){
+			return 0;
+		}
+		return -1;
+	}
+	public JsonObject getTextureId(int pXuid) {
+		if (pXuid <= 0) {
+				JsonObject getJson = (webRequest("https://api.geysermc.org/v2/skin/"+pXuid));
 				//return texture_id aus getSkinJson
 				JsonObject getSkinJson = getJson.getAsJsonObject("texture_id");
+				return getSkinJson;
 			}
 			// if message gets returned = player wasn't found
 			return null;
 		}
-		return textureid;
-	}
 
 	public JsonObject webRequest(String pUrl){
 		var client = newHttpClient();

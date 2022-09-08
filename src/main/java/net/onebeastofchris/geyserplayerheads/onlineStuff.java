@@ -8,6 +8,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.*;
+
 import static java.net.http.HttpClient.newHttpClient;
 
 public class onlineStuff {
@@ -41,6 +44,7 @@ public class onlineStuff {
         return this.encoded;
     }
     public JsonObject webRequest(String pUrl) {
+        //todo: async
         var client = newHttpClient();
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(pUrl))
@@ -71,5 +75,15 @@ public class onlineStuff {
             return getJson.get("texture_id").getAsString();
         } else return null;
         // if message gets returned = player wasn't found
+    }
+    public NbtCompound getNbt(){
+        String p1 = "{SkullOwner:{Id:[I;-12288,4481,213748,-8962],Properties:{textures:[{Value:";
+        String p2 = "}]}}}";
+        try {
+            NbtCompound c = StringNbtReader.parse(p1 + getEncoded() + p2);
+            return c;
+        } catch (CommandSyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

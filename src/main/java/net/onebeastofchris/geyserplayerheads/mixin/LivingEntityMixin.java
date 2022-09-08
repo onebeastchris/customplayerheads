@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -32,8 +33,12 @@ public abstract class LivingEntityMixin extends Entity {
 
 				if (playerName.contains(".")) {
 					onlineStuff c = new onlineStuff(playerName);
+					NbtCompound yourNbt = null;
+					dropItem(Items.PLAYER_HEAD);
+					//todo: insert nbt with custom skin
 				} else {
-					dropItem(Items.PLAYER_HEAD.getDefaultStack().setCustomName(Text.of("Steve")).getItem());
+					dropItem(Items.PLAYER_HEAD);
+					//todo: insert java skin
 			}
 		}
 	}

@@ -5,13 +5,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
-import net.onebeastofchris.geyserplayerheads.onlineStuff;
+import net.onebeastofchris.geyserplayerheads.TextureApplier;
+import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,23 +22,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+
 	@Inject(method = "dropLoot", at = @At("TAIL"))
 	private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
 		if (this.livingEntity instanceof PlayerEntity player) {
-			String playerName = String.valueOf(player.getEntityName());
-			String playerDeathPos = String.valueOf(player.getBlockPos());
-			GeyserPlayerHeads.LOGGER.info(playerName + " died at " + playerDeathPos);
+			String playerName = player.getEntityName();
+			GeyserPlayerHeads.getLogger().info(playerName + " died at " + player.getBlockPos().toString());
 
-				if (playerName.contains(".")) {
+				if (playerName.startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
 					String clearName = playerName.replace(".", "");
-					onlineStuff c = new onlineStuff(clearName);
+					TextureApplier c = new TextureApplier(clearName);
 					var head = Items.PLAYER_HEAD.getDefaultStack();
 					head.setNbt(c.getBedrockNbt());
 					dropStack(head);
 				} else {
-					onlineStuff d = new onlineStuff(playerName);
+					TextureApplier d = new TextureApplier(playerName);
 					var head = Items.PLAYER_HEAD.getDefaultStack();
-					head.setNbt(d.getJavaNbt());
+					head.setNbt(d.getJavaNbt(playerName));
 					dropStack(head);
 
 			}
@@ -48,7 +46,6 @@ public abstract class LivingEntityMixin extends Entity {
 	}
 
 //	@Shadow protected abstract void drop(DamageSource source);
-
 	private final LivingEntity livingEntity = (LivingEntity) (Object) this;
 //	private final LivingEntity attacker = livingEntity.getAttacker();
 	public LivingEntityMixin(EntityType<?> type, World world) {

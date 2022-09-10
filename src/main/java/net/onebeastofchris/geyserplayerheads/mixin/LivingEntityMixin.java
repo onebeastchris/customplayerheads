@@ -32,7 +32,8 @@ public abstract class LivingEntityMixin extends Entity {
 			GeyserPlayerHeads.LOGGER.info(playerName + " died at " + playerDeathPos);
 
 				if (playerName.contains(".")) {
-					onlineStuff c = new onlineStuff(playerName);
+					String clearName = playerName.replace(".", "");
+					onlineStuff c = new onlineStuff(clearName);
 					var head = Items.PLAYER_HEAD.getDefaultStack();
 					head.setNbt(c.getBedrockNbt());
 					dropStack(head);

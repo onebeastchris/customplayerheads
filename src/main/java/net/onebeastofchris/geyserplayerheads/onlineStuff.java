@@ -7,9 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
-
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.*;
+import net.minecraft.nbt.visitor.NbtOrderedStringFormatter;
 
 import static java.net.http.HttpClient.newHttpClient;
 
@@ -77,13 +76,24 @@ public class onlineStuff {
         // if message gets returned = player wasn't found
     }
     public NbtCompound getNbt(){
-        String p1 = "{SkullOwner:{Id:[I;-12288,4481,213748,-8962],Properties:{textures:[{Value:";
-        String p2 = "}]}}}";
-        try {
-            NbtCompound c = StringNbtReader.parse(p1 + getEncoded() + p2);
-            return c;
-        } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        NbtCompound c = new NbtCompound();
+        NbtCompound c1 = new NbtCompound();
+        NbtCompound c2 = new NbtCompound();
+        int[] intArray = new int[] {1,1,1,1};
+        NbtList nl = new NbtList();
+        NbtCompound c3 = new NbtCompound();
+
+        c3.putString("Value", getEncoded());
+        nl.add(c3);
+        c2.put("textures", nl);
+        c1.put("Properties", c2);
+        c1.putIntArray("Id", intArray);
+        c.put("SkullOwner", c1);
+        GeyserPlayerHeads.LOGGER.info(c.asString());
+        return c;
     }
 }
+
+//{SkullOwner:{Id:[I;-12288,4481,213748,-8962],Properties:{textures:[{Value:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQyM2M0ZjQwNWQxYTA0NGExYTlmODNmZmNlNGYxOTljODkwOTk5Mzg1ZGNlNDQ1MWNjYTFiYWVkNGEzNjA2ZGMifX19}]}}} 1
+//{SkullOwner:{Id:[I;1,1,1,1],                 Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2ZhZTA2ZTZjMjdiN2ZhNjI1Y2ZiODdjMTE3Y2RjZDVlYjAxODI2ZjZiOWQwNGJlN2Q2NzczZjYwYzE3NmM1MmYifX19"}]}}}
+//{SkullOwner:{Id:[I;1,1,1,1],                 Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2ZhZTA2ZTZjMjdiN2ZhNjI1Y2ZiODdjMTE3Y2RjZDVlYjAxODI2ZjZiOWQwNGJlN2Q2NzczZjYwYzE3NmM1MmYifX19"}]}}}

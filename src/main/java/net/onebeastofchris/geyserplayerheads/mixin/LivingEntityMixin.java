@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Credit for the following code goes to DakotaPride
+ * Credit for parts of the following  code to DakotaPride
  * <a href="https://github.com/DakotaPride/Incantation-Fabric/blob/master/src/main/java/net/dakotapride/incantation/mixin/LivingEntityMixin.java">...</a>
  * **/
 
@@ -31,15 +31,19 @@ public abstract class LivingEntityMixin extends Entity {
 			String playerDeathPos = String.valueOf(player.getBlockPos());
 			GeyserPlayerHeads.LOGGER.info(playerName + " died at " + playerDeathPos);
 
-				if (playerName.contains(".")) {
-					onlineStuff c = new onlineStuff(playerName);
-					NbtCompound yourNbt = null;
-					dropItem(Items.PLAYER_HEAD);
+				//if (!playerName.contains(".")) {
+					onlineStuff c = new onlineStuff("YeloBotanist");
+					GeyserPlayerHeads.LOGGER.info(String.valueOf(c.getXuid()));
+					GeyserPlayerHeads.LOGGER.info(c.getEncoded());
+					GeyserPlayerHeads.LOGGER.info(String.valueOf(c.getNbt().getSize()));
+					var head = Items.PLAYER_HEAD.getDefaultStack();
+					head.setNbt(c.getNbt());
+					dropItem(head.getItem());
 					//todo: insert nbt with custom skin
-				} else {
-					dropItem(Items.PLAYER_HEAD);
+				//} else {
+				//	dropItem(Items.PLAYER_HEAD);
 					//todo: insert java skin
-			}
+			//}
 		}
 	}
 

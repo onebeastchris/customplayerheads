@@ -31,19 +31,18 @@ public abstract class LivingEntityMixin extends Entity {
 			String playerDeathPos = String.valueOf(player.getBlockPos());
 			GeyserPlayerHeads.LOGGER.info(playerName + " died at " + playerDeathPos);
 
-				//if (!playerName.contains(".")) {
-					onlineStuff c = new onlineStuff("YeloBotanist");
-					GeyserPlayerHeads.LOGGER.info(String.valueOf(c.getXuid()));
-					GeyserPlayerHeads.LOGGER.info(c.getEncoded());
-					GeyserPlayerHeads.LOGGER.info(String.valueOf(c.getNbt().getSize()));
+				if (playerName.contains(".")) {
+					onlineStuff c = new onlineStuff(playerName);
 					var head = Items.PLAYER_HEAD.getDefaultStack();
-					head.setNbt(c.getNbt());
-					dropItem(head.getItem());
-					//todo: insert nbt with custom skin
-				//} else {
-				//	dropItem(Items.PLAYER_HEAD);
-					//todo: insert java skin
-			//}
+					head.setNbt(c.getBedrockNbt());
+					dropStack(head);
+				} else {
+					onlineStuff d = new onlineStuff(playerName);
+					var head = Items.PLAYER_HEAD.getDefaultStack();
+					head.setNbt(d.getJavaNbt());
+					dropStack(head);
+
+			}
 		}
 	}
 

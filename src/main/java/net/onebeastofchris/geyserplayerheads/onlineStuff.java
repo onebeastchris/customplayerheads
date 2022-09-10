@@ -17,13 +17,21 @@ public class onlineStuff {
     private long xuid;
     private String textureID;
     private String encoded;
+
+    private String playername;
     public onlineStuff(String pUsername){
+            setPlayername(pUsername);
             xuid = getXuid(pUsername);
             textureID = getTextureId(xuid);
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/"+ getTextureID() + "\"}}}";
             encoded = Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
     }
-
+    public void setPlayername(String pName){
+        this.playername = pName;
+    }
+    public String getPlayername(){
+        return this.playername;
+    }
     public void setXuid(long a){
         this.xuid = a;
     }
@@ -75,7 +83,7 @@ public class onlineStuff {
         } else return null;
         // if message gets returned = player wasn't found
     }
-    public NbtCompound getNbt(){
+    public NbtCompound getBedrockNbt(){
         NbtCompound c = new NbtCompound();
         NbtCompound c1 = new NbtCompound();
         NbtCompound c2 = new NbtCompound();
@@ -89,6 +97,13 @@ public class onlineStuff {
         c1.put("Properties", c2);
         c1.putIntArray("Id", intArray);
         c.put("SkullOwner", c1);
+        GeyserPlayerHeads.LOGGER.info(c.asString());
+        return c;
+    }
+    public NbtCompound getJavaNbt() {
+        NbtCompound c = new NbtCompound();
+
+        c.putString("SkullOwner", getPlayername());
         GeyserPlayerHeads.LOGGER.info(c.asString());
         return c;
     }

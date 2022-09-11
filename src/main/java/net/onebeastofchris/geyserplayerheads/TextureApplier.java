@@ -2,15 +2,11 @@ package net.onebeastofchris.geyserplayerheads;
 import com.google.gson.JsonObject;
 import java.util.Base64;
 import net.minecraft.nbt.*;
-import net.minecraft.util.JsonHelper;
-import org.checkerframework.checker.units.qual.N;
 
 public class TextureApplier {
-
     private final String textureID;
     private final String encoded;
     private final String playerName;
-
 
     public TextureApplier(String pPlayerName){
         long xuid = getXuid(pPlayerName);
@@ -67,7 +63,6 @@ public class TextureApplier {
         c.put("display", c1);
         GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
-
     }
 
     public String getTextureID(){

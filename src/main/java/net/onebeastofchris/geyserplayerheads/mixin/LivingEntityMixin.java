@@ -27,9 +27,7 @@ public abstract class LivingEntityMixin extends Entity {
 	private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
 		if (this.livingEntity instanceof PlayerEntity player) {
 			String playerName = player.getEntityName();
-		//	String attackerName = attacker.getEntityName();
 			GeyserPlayerHeads.getLogger().info(playerName + " died at " + player.getBlockPos().toString());
-
 				if (playerName.startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
 					String clearName = playerName.replace(".", "");
 					TextureApplier c = new TextureApplier(clearName);
@@ -45,6 +43,12 @@ public abstract class LivingEntityMixin extends Entity {
 
 			}
 		}
+	}
+
+	private String gph$getAttacker(LivingEntity pEntity){
+		if (pEntity instanceof PlayerEntity player){
+			return player.getEntityName();
+		} else return null;
 	}
 
 //	@Shadow protected abstract void drop(DamageSource source);

@@ -80,7 +80,3 @@ public class TextureApplier {
         return this.encoded;
     }
 }
-
-//{SkullOwner:{Id:[I;-12288,4481,213748,-8962],Properties:{textures:[{Value:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQyM2M0ZjQwNWQxYTA0NGExYTlmODNmZmNlNGYxOTljODkwOTk5Mzg1ZGNlNDQ1MWNjYTFiYWVkNGEzNjA2ZGMifX19}]}}} 1
-//{SkullOwner:{Id:[I;1,1,1,1],                 Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2ZhZTA2ZTZjMjdiN2ZhNjI1Y2ZiODdjMTE3Y2RjZDVlYjAxODI2ZjZiOWQwNGJlN2Q2NzczZjYwYzE3NmM1MmYifX19"}]}}}
-//{SkullOwner:{Id:[I;1,1,1,1],                 Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2ZhZTA2ZTZjMjdiN2ZhNjI1Y2ZiODdjMTE3Y2RjZDVlYjAxODI2ZjZiOWQwNGJlN2Q2NzczZjYwYzE3NmM1MmYifX19"}]}}}

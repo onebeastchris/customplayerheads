@@ -2,15 +2,19 @@ package net.onebeastofchris.geyserplayerheads;
 import com.google.gson.JsonObject;
 import java.util.Base64;
 import net.minecraft.nbt.*;
+import net.minecraft.util.JsonHelper;
+import org.checkerframework.checker.units.qual.N;
 
 public class TextureApplier {
 
     private final String textureID;
     private final String encoded;
+    private final String playerName;
 
 
-    public TextureApplier(String playerName){
-        long xuid = getXuid(playerName);
+    public TextureApplier(String pPlayerName){
+        long xuid = getXuid(pPlayerName);
+            playerName = pPlayerName;
             textureID = getTextureId(xuid);
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/"+ getTextureID() + "\"}}}";
             encoded = Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
@@ -40,6 +44,7 @@ public class TextureApplier {
         NbtCompound c2 = new NbtCompound();
         NbtList nl = new NbtList();
         NbtCompound c3 = new NbtCompound();
+        NbtCompound n = new NbtCompound();
 
         c3.putString("Value", getEncoded());
         nl.add(c3);
@@ -47,20 +52,29 @@ public class TextureApplier {
         c1.put("Properties", c2);
         c1.putIntArray("Id", new int[] {1,1,1,1});
         c.put("SkullOwner", c1);
+        n.putString("Name","[{\"text\":\"." + getPlayerName() + "'s head\",\"italic\":false}]");
+        c.put("display", n);
         GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
     }
 
-    public NbtCompound getJavaNbt(String playerName) {
+    public NbtCompound getJavaNbt() {
         NbtCompound c = new NbtCompound();
+        NbtCompound c1 = new NbtCompound();
 
-        c.putString("SkullOwner", playerName);
+        c1.putString("Name","[{\"text\":\"" + getPlayerName() + "'s head\",\"italic\":false}]");
+        c.putString("SkullOwner", getPlayerName());
+        c.put("display", c1);
         GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
+
     }
 
     public String getTextureID(){
         return this.textureID;
+    }
+    public String getPlayerName(){
+        return this.playerName;
     }
     public String getEncoded(){
         return this.encoded;

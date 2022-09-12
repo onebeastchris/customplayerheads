@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
-import net.onebeastofchris.geyserplayerheads.TextureApplier;
+import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
 import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,22 +26,15 @@ public abstract class LivingEntityMixin extends Entity {
 	@Inject(method = "dropLoot", at = @At("TAIL"))
 	private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
 		if (this.livingEntity instanceof PlayerEntity player) {
-			String playerName = player.getEntityName();
-			GeyserPlayerHeads.getLogger().info(playerName + " died at " + player.getBlockPos().toString());
-				if (playerName.startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
-					String clearName = playerName.replace(".", "");
-					TextureApplier c = new TextureApplier(clearName);
-					var head = Items.PLAYER_HEAD.getDefaultStack();
-					head.setNbt(c.getBedrockNbt());
-					dropStack(head);
-				} else {
-					TextureApplier d = new TextureApplier(playerName);
-					var head = Items.PLAYER_HEAD.getDefaultStack();
-					head.setNbt(d.getJavaNbt());
-					GeyserPlayerHeads.getLogger().info(d.getJavaNbt().asString());
-					dropStack(head);
+			GeyserPlayerHeads.getLogger().info(player.getEntityName() + " died at " + player.getBlockPos().toString());
 
+			var head = Items.PLAYER_HEAD.getDefaultStack();
+			if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
+				head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt());
+			} else {
+				head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt());
 			}
+			dropStack(head);
 		}
 	}
 

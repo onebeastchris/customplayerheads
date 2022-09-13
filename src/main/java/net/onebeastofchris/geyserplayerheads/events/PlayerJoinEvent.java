@@ -4,8 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.TextureApplier;
-import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
-
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.Executors;

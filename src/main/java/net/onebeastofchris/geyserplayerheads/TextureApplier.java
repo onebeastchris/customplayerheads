@@ -66,7 +66,7 @@ public class TextureApplier {
             n1.put("Lore", n2);
         }
         c.put("display", n1);
-        GeyserPlayerHeads.getLogger().info(c.asString());
+        //GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
     }
 
@@ -83,7 +83,7 @@ public class TextureApplier {
         c.putString("SkullOwner", getPlayerName());
         c.put("display", c1);
 
-        GeyserPlayerHeads.getLogger().info(c.asString());
+        //GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
     }
 

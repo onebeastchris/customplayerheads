@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.TextureApplier;
+import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class PlayerJoinEvent {
     public static void onSpawn(World world, Entity entity) {
 
         if (world.isClient) {
-            return;
+        return;
         }
 
         if (!(entity instanceof PlayerEntity player)) {
@@ -24,7 +25,7 @@ public class PlayerJoinEvent {
         }
         // Start new thread, so we don't lock up main thread if we get a bad server response.
         Executors.newSingleThreadExecutor().execute(() ->
-                textureMap.put(player.getUuid(), new TextureApplier(player.getEntityName().replace(".", ""))));
+                textureMap.put(player.getUuid(), new TextureApplier(player)));
     }
 
     public static HashMap<UUID, TextureApplier> getTextureID() {

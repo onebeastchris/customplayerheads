@@ -1,26 +1,39 @@
 package net.onebeastofchris.geyserplayerheads;
+
 import com.google.gson.JsonObject;
 import java.util.Base64;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.text.Text;
+import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
 
 public class TextureApplier {
     private final String textureID;
     private final String encoded;
     private final String playerName;
 
-    public TextureApplier(String pPlayerName){
-        long xuid = getXuid(pPlayerName);
-            playerName = pPlayerName;
+    public TextureApplier(PlayerEntity player) {
+        if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
+            if (FloodgateUser.isFloodgatePlayer(player.getUuid())){
+                playerName = player.getEntityName().replace(FloodgateUser.FloodgatePrefix(), "");
+            } else playerName = player.getEntityName().replace(".", "");
+            long xuid = getXuid(playerName);
             textureID = getTextureId(xuid);
-            String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/"+ getTextureID() + "\"}}}";
+            String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + getTextureID() + "\"}}}";
             encoded = Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
+        } else {
+            playerName = player.getEntityName();
+            textureID = null;
+            encoded = null;
+        }
     }
 
-    public long getXuid(String playerName){
+    public long getXuid(String playerName) {
         var xuid = new ServerRequest().webRequest("https://api.geysermc.org/v2/xbox/xuid/" + playerName);
-        if (xuid.has("xuid")){
+        if (xuid.has("xuid")) {
             return xuid.get("xuid").getAsLong();
-        } else if (xuid.has("message")){
+        } else if (xuid.has("message")) {
             return 0;
         }
         return -1;
@@ -34,44 +47,78 @@ public class TextureApplier {
         // if message gets returned = player wasn't found
     }
 
-    public NbtCompound getBedrockNbt(){
+    public NbtCompound getBedrockNbt(Entity pAttacker) {
         NbtCompound c = new NbtCompound();
         NbtCompound c1 = new NbtCompound();
         NbtCompound c2 = new NbtCompound();
         NbtList nl = new NbtList();
         NbtCompound c3 = new NbtCompound();
-        NbtCompound n = new NbtCompound();
+        NbtCompound n1 = new NbtCompound();
+        NbtList n2 = new NbtList();
+        NbtCompound n3 = new NbtCompound();
 
         c3.putString("Value", getEncoded());
         nl.add(c3);
         c2.put("textures", nl);
         c1.put("Properties", c2);
-        c1.putIntArray("Id", new int[] {1,1,1,1});
+        c1.putIntArray("Id", new int[]{1, 1, 1, 1});
         c.put("SkullOwner", c1);
-        n.putString("Name","[{\"text\":\"." + getPlayerName() + "'s head\",\"italic\":false}]");
-        c.put("display", n);
+        n1.putString("Name", "[{\"text\":\"" + getNameWithPrefix() + "'s head\",\"italic\":false}]");
+        if (!getAttacker(pAttacker).isBlank()) {
+            n3.putString("", getJsonText("killed by " + getAttacker(pAttacker)));
+            n2.add(n3);
+            n1.put("Lore", n2);
+        }
+        c.put("display", n1);
         GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
     }
 
-    public NbtCompound getJavaNbt() {
+    public NbtCompound getJavaNbt(Entity pAttacker) {
         NbtCompound c = new NbtCompound();
         NbtCompound c1 = new NbtCompound();
+        NbtList c2 = new NbtList();
+        NbtCompound c3 = new NbtCompound();
 
-        c1.putString("Name","[{\"text\":\"" + getPlayerName() + "'s head\",\"italic\":false}]");
+        c1.putString("Name", getJsonText(getPlayerName() + "'s head"));
+        if (!getAttacker(pAttacker).isBlank()) {
+            c3.putString("", getJsonText("killed by " + getAttacker(pAttacker)));
+            c2.add(c3);
+            c1.put("Lore", c2);
+        }
         c.putString("SkullOwner", getPlayerName());
         c.put("display", c1);
+
         GeyserPlayerHeads.getLogger().info(c.asString());
         return c;
     }
 
-    public String getTextureID(){
+    public String getAttacker(Entity pEntity) {
+        String pReturn = "";
+        if (pEntity instanceof PlayerEntity player) {
+            return player.getEntityName();
+        } else return pReturn;
+    }
+
+    public String getJsonText(String a) {
+        String b;
+        b = Text.Serializer.toJson(Text.literal(a).styled(style -> style.withItalic(false)));
+        return b;
+    }
+
+    public String getTextureID() {
         return this.textureID;
     }
-    public String getPlayerName(){
-        return this.playerName;
+
+    public String getNameWithPrefix() {
+        return FloodgateUser.FloodgatePrefix() + this.playerName;
     }
-    public String getEncoded(){
+
+    public String getEncoded() {
         return this.encoded;
+    }
+
+    public String getPlayerName() {
+        return this.playerName;
     }
 }

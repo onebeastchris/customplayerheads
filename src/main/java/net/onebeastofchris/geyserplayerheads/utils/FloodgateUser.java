@@ -8,6 +8,7 @@ import java.util.UUID;
 public class FloodgateUser {
     /**
      * Determines if a player is a bedrock player
+     *
      * @param uuid the UUID to determine
      * @return true if the player is from floodgate
      */
@@ -17,5 +18,9 @@ public class FloodgateUser {
             return false;
         }
         return FloodgateApi.getInstance().isFloodgatePlayer(uuid);
+    }
+
+    public static String FloodgatePrefix() {
+        return FloodgateApi.getInstance().getPlayerPrefix();
     }
 }

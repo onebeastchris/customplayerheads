@@ -15,6 +15,6 @@ Current featureset:
 - hooks in the web api once upon player join, async request to not freeze the game
 - if killed by player: adds "killed by [player]" in the lore of the item!
 
-
+Huge thanks to Jens, the Fabric discord, and Elysian members for helping me test and develop this mod!
 
 Note: This is NOT an official GeyserMC mod. It is made to work with Geyser, but it is not maintained or produced by GeyserMC. If you need support with this mod, please do not ask the Geyser developers - instead, please open an issue here

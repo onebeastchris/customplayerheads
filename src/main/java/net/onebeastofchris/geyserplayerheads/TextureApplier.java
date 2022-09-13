@@ -53,7 +53,6 @@ public class TextureApplier {
         NbtCompound c3 = new NbtCompound();
         NbtCompound n1 = new NbtCompound();
         NbtList n2 = new NbtList();
-        NbtCompound n3 = new NbtCompound();
 
         c3.putString("Value", getEncoded());
         nl.add(c3);
@@ -61,10 +60,9 @@ public class TextureApplier {
         c1.put("Properties", c2);
         c1.putIntArray("Id", new int[]{1, 1, 1, 1});
         c.put("SkullOwner", c1);
-        n1.putString("Name", "[{\"text\":\"" + getNameWithPrefix() + "'s head\",\"italic\":false}]");
+        n1.putString("Name", getJsonText(getNameWithPrefix() + "'s head"));
         if (!getAttacker(pAttacker).isBlank()) {
-            n3.putString("", getJsonText("killed by " + getAttacker(pAttacker)));
-            n2.add(n3);
+            n2.add(NbtString.of(getJsonText("killed by " + getAttacker(pAttacker))));
             n1.put("Lore", n2);
         }
         c.put("display", n1);
@@ -76,12 +74,10 @@ public class TextureApplier {
         NbtCompound c = new NbtCompound();
         NbtCompound c1 = new NbtCompound();
         NbtList c2 = new NbtList();
-        NbtCompound c3 = new NbtCompound();
 
         c1.putString("Name", getJsonText(getPlayerName() + "'s head"));
         if (!getAttacker(pAttacker).isBlank()) {
-            c3.putString("", getJsonText("killed by " + getAttacker(pAttacker)));
-            c2.add(c3);
+            c2.add(NbtString.of(getJsonText("killed by " + getAttacker(pAttacker))));
             c1.put("Lore", c2);
         }
         c.putString("SkullOwner", getPlayerName());

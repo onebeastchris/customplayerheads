@@ -19,8 +19,11 @@ public class FloodgateUser {
         }
         return FloodgateApi.getInstance().isFloodgatePlayer(uuid);
     }
-
     public static String FloodgatePrefix() {
+        if (FloodgateApi.getInstance() == null) {
+            GeyserPlayerHeads.getLogger().info("Floodgate is not installed! We will check the bedrock . prefix.");
+            return ".";
+        }
         return FloodgateApi.getInstance().getPlayerPrefix();
     }
 }

@@ -15,9 +15,7 @@ public class TextureApplier {
 
     public TextureApplier(PlayerEntity player) {
         if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
-            if (FloodgateUser.isFloodgatePlayer(player.getUuid())){
-                playerName = player.getEntityName().replace(FloodgateUser.FloodgatePrefix(), "");
-            } else playerName = player.getEntityName().replace(".", "");
+            playerName = player.getEntityName().replace(FloodgateUser.FloodgatePrefix(), "");
             long xuid = getXuid(playerName);
             textureID = getTextureId(xuid);
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + getTextureID() + "\"}}}";

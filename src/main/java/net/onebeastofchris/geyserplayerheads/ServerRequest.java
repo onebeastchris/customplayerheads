@@ -14,7 +14,6 @@ import static java.net.http.HttpClient.newHttpClient;
 public class ServerRequest {
 
     public JsonObject webRequest(String pUrl) {
-        //todo: async
         var client = newHttpClient();
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(pUrl))

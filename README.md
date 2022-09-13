@@ -1,15 +1,19 @@
-My attempt to make a mod, that would allow playerheads to be dropped upon player death.
+Small fabric mod to drop player heads upon player death that's compatible with bedrock players joined through geyser!
 Why a mod instead of a datapack? Mods, unlike datapacks, allow for custom skin files on playerheads which are necessary in the approach here to get bedrock player skins. Code is messy, since i have no clue what i'm doing!
+
+Requires FabricAPI! Floodgate on the backend is optional, but necessary if you're using a prefix other than ".".
+Because of https://bugs.mojang.com/browse/MC-174496, it is recommended to use a mod like https://modrinth.com/mod/headfix to keep Custom Head Names when breaking the head.
 
 ToDo:
 - publish .jar
 
 Current featureset:
 - drops a playerhead upon player death, for java and bedrock players
-- gets bedrock texture via the geyser global api
-- optional floodgate hook to not rely on prefixes
+- gets bedrock textures via the geyser global api
+- optional floodgate hook to not rely on prefixes/"."
 - names bedrock playerhead
 - hooks in the web api once upon player join, async request to not freeze the game
+- if killed by player: adds "killed by [player]" in the lore of the item!
 
 
 

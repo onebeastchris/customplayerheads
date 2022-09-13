@@ -5,7 +5,7 @@ Requires FabricAPI! Floodgate on the backend is optional, but necessary if you'r
 Because of https://bugs.mojang.com/browse/MC-174496, it is recommended to use a mod like https://modrinth.com/mod/headfix to keep Custom Head Names when breaking the head.
 
 ToDo:
-- publish .jar
+- publish .jar on modrinth/curseforge. For now, check the releases on GitHub!
 
 Current featureset:
 - drops a playerhead upon player death, for java and bedrock players

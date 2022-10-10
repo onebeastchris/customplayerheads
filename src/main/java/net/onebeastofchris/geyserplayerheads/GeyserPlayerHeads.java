@@ -1,10 +1,12 @@
 package net.onebeastofchris.geyserplayerheads;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
+import net.onebeastofchris.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +24,13 @@ public class GeyserPlayerHeads implements ModInitializer {
 		registerEvents();
 		logger = LoggerFactory.getLogger("gph");
 		logger.info("GeyserPlayerHeads starting now");
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> register(dispatcher));
 	}
 
 	private void registerEvents() {
 		ServerEntityEvents.ENTITY_LOAD.register((Entity entity, ServerWorld world) -> PlayerJoinEvent.onSpawn(world, entity));
 	}
+
 
 	public static Logger getLogger() {
 		return logger;

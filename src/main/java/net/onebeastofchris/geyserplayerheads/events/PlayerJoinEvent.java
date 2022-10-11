@@ -15,7 +15,7 @@ public class PlayerJoinEvent {
     public static void onSpawn(World world, Entity entity) {
 
         if (world.isClient) {
-        return;
+            return;
         }
 
         if (!(entity instanceof PlayerEntity player)) {
@@ -23,10 +23,18 @@ public class PlayerJoinEvent {
         }
         // Start new thread, so we don't lock up main thread if we get a bad server response.
         Executors.newSingleThreadExecutor().execute(() ->
-                textureMap.put(player.getUuid(), new TextureApplier(player)));
+                textureMap.put(player.getUuid(), new TextureApplier(player.getEntityName(), player.getUuid())));
     }
 
     public static HashMap<UUID, TextureApplier> getTextureID() {
         return textureMap;
     }
+
+    public static void addToMap(UUID uuid, String playerName) {
+        if ((!PlayerJoinEvent.getTextureID().containsKey(uuid))) {
+            Executors.newSingleThreadExecutor().execute(() ->
+                    textureMap.put(uuid, new TextureApplier(playerName, uuid)));
+        }
+    }
 }
+

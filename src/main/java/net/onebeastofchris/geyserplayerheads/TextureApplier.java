@@ -2,6 +2,8 @@ package net.onebeastofchris.geyserplayerheads;
 
 import com.google.gson.JsonObject;
 import java.util.Base64;
+import java.util.UUID;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
@@ -13,21 +15,21 @@ public class TextureApplier {
     private final String encoded;
     private final String playerName;
 
-    public TextureApplier(PlayerEntity player) {
-        if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
-            playerName = player.getEntityName().replace(FloodgateUser.FloodgatePrefix(), "");
+    public TextureApplier(String pPlayerName, UUID uuid) {
+        if (pPlayerName.startsWith(".") || FloodgateUser.isFloodgatePlayer(uuid)) {
+            playerName = pPlayerName.replace(FloodgateUser.FloodgatePrefix(), "");
             long xuid = getXuid(playerName);
             textureID = getTextureId(xuid);
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + getTextureID() + "\"}}}";
             encoded = Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
         } else {
-            playerName = player.getEntityName();
+            playerName = pPlayerName;
             textureID = null;
             encoded = null;
         }
     }
 
-    public long getXuid(String playerName) {
+    public static long getXuid(String playerName) {
         var xuid = new ServerRequest().webRequest("https://api.geysermc.org/v2/xbox/xuid/" + playerName);
         if (xuid.has("xuid")) {
             return xuid.get("xuid").getAsLong();

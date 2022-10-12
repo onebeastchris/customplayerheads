@@ -63,7 +63,7 @@ public class TextureApplier {
         c1.putIntArray("Id", new int[]{1, 1, 1, 1});
         c.put("SkullOwner", c1);
         n1.putString("Name", getJsonText(getNameWithPrefix() + "'s head"));
-        if (!getAttacker(pAttacker).isBlank()) {
+        if (!getAttacker(pAttacker).isBlank() && GeyserPlayerHeads.config.showLore) {
             n2.add(NbtString.of(getJsonText("killed by " + getAttacker(pAttacker))));
             n1.put("Lore", n2);
         }
@@ -78,7 +78,7 @@ public class TextureApplier {
         NbtList c2 = new NbtList();
 
         c1.putString("Name", getJsonText(getPlayerName() + "'s head"));
-        if (!getAttacker(pAttacker).isBlank()) {
+        if (!getAttacker(pAttacker).isBlank() && GeyserPlayerHeads.config.showLore) {
             c2.add(NbtString.of(getJsonText("killed by " + getAttacker(pAttacker))));
             c1.put("Lore", c2);
         }

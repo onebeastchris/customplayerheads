@@ -7,7 +7,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
-//import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
+import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
 import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
 import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,7 +33,11 @@ public abstract class LivingEntityMixin extends Entity {
             } else {
                 head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt(source.getAttacker()));
             }
-            dropStack(head);
+            if (GeyserPlayerHeads.config.dropNonPlayerKillHeads) {
+                dropStack(head);
+            } else if (source.getAttacker() instanceof PlayerEntity){
+                dropStack(head);
+            }
         }
     }
 

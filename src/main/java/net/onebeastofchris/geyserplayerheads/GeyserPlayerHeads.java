@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
@@ -52,6 +53,9 @@ public class GeyserPlayerHeads implements ModInitializer {
 		if (GeyserPlayerHeads.config.commandEnabled) {
 			ModCommandRegister.registerCommand();
 			logger.info("/getskull command enabled!");
+		}
+		if (!FabricLoader.getInstance().isModLoaded("floodgate")){
+			logger.info("Floodgate is not installed! We will check the bedrock . prefix.");
 		}
 	}
 

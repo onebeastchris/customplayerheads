@@ -50,10 +50,11 @@ public class GeyserPlayerHeads implements ModInitializer {
 		logger.info("GeyserPlayerHeads starting now");
 		registerEvents();
 		dataWriter();
-		if (GeyserPlayerHeads.config.commandEnabled) {
+		/*if (GeyserPlayerHeads.config.commandEnabled) {
 			ModCommandRegister.registerCommand();
 			logger.info("/getskull command enabled!");
-		}
+			}
+		*/
 		if (!FabricLoader.getInstance().isModLoaded("floodgate")){
 			logger.info("Floodgate is not installed! We will check the bedrock . prefix.");
 		}

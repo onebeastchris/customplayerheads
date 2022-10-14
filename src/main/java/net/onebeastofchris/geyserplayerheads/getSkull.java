@@ -29,37 +29,51 @@ public class getSkull {
         return GeyserPlayerHeads.config.commandPermissionLevel;
     }
 
-    public static LiteralCommandNode registeri(CommandDispatcher<ServerCommandSource> dispatcher) {
+    /*public static LiteralCommandNode registeri(CommandDispatcher<ServerCommandSource> dispatcher) {
         return dispatcher.register(literal("getskull")
                 .requires(source -> source.hasPermissionLevel(getPermLevel())) // Must be a game master to use the command. Command will not show up in tab completion or execute to non operators or any operator that is permission level 1.
                 .then(literal("bedrock"))
-                .then(literal(""))
                 .then(argument("username", greedyString())
                         .executes(ctx -> getBedrockSkull(ctx.getSource(), getString(ctx, "username")))) // You can deal with the arguments out here and pipe them into the command.
                 .executes(ctx -> noArgs(ctx))
         );
     }
+    */
     public static LiteralCommandNode register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        return dispatcher.register(literal("getskull")
+        return dispatcher.register(
+                literal("getskull")
                 .requires(source -> source.hasPermissionLevel(getPermLevel())) // Must be a game master to use the command. Command will not show up in tab completion or execute to non operators or any operator that is permission level 1.
-                .then(literal("bedrock"))
-                        .then((RequiredArgumentBuilder.argument("JavaTargets", EntityArgumentType.player())))
+                .then(
+                        (argument("JavaPlayer", EntityArgumentType.player()))
+                                .executes((context -> {
+                                    final PlayerEntity self = context.getSource().getPlayer();
+                                    assert self != null;
+                                    self.sendMessage(Text.literal("Java. THIS FEATURE IS NOT IMPLEMENTED YET!"));
+                                            return 1;
+                                        })
+                                )
+                        )
+                .then(literal("bedrock")
+                .then(
+                        (argument("BedrockPlayer", EntityArgumentType.player()))
                         .executes((context) -> {
-                            getBedrockSkull((ServerCommandSource) context.getSource(), getString(context, "targets"));
-                            GeyserPlayerHeads.getLogger().info("JAVA");
+                            final PlayerEntity self = context.getSource().getPlayer();
+                            if (self != null) {
+                                self.sendMessage(Text.literal("Bedrock. THIS FEATURE IS NOT IMPLEMENTED YET!"));
+                            }
                             return 1;
-                        })
-                        .then((RequiredArgumentBuilder.argument("target", EntityArgumentType.player())))
-                        .executes((context -> {
-                            getBedrockSkull(context.getSource(), getString(context, "target"));
-                            GeyserPlayerHeads.getLogger().info("BEDROCK");
-                            return 1;
-                        }))
-                        );
+                        })))
+                .executes(context -> {
+                    noArgs(context);
+                    return 1;
+                })
+        );
+
     }
 
-    public static int getBedrockSkull(ServerCommandSource source, String message) throws CommandSyntaxException {
+    /*public static int getBedrockSkull(ServerCommandSource source, String message) throws CommandSyntaxException {
         final PlayerEntity self = source.getPlayer();
+        assert self != null;
         self.sendMessage(Text.literal("winner winner chicken dinner"));
         var ref = new Object() {
             long xuid = -2;
@@ -72,18 +86,19 @@ public class getSkull {
             self.getInventory().insertStack(head);
             GeyserPlayerHeads.getLogger().info("head");
             return 1;
-        } else if (ref.xuid == 0) {
+        } else if (ref.xuid == 0)
             self.sendMessage(Text.literal("Bedrock player not found in Geyser's Global API. Check for spelling, and make sure they have joined a Geyser server before."));
-        } else self.sendMessage(Text.literal("Something went wrong..."));
+        else self.sendMessage(Text.literal("Something went wrong..."));
         GeyserPlayerHeads.getLogger().info(String.valueOf(ref.xuid));
 
         return 1; // Success
     }
-
+*/
     public static int noArgs(CommandContext<ServerCommandSource> ctx) {
         final ServerCommandSource source = ctx.getSource();
         final PlayerEntity self = source.getPlayer(); // If not a player than the command ends
-        self.sendMessage(Text.literal("No user specified!"));
+        assert self != null;
+        self.sendMessage(Text.literal("THIS FEATURE IS NOT IMPLEMENTED YET!"));
         return 1;
     }
 

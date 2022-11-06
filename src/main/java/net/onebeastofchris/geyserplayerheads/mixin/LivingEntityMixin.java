@@ -26,12 +26,12 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "dropLoot", at = @At("TAIL"))
     private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
         if (this.livingEntity instanceof PlayerEntity player) {
-            //GeyserPlayerHeads.getLogger().info(player.getEntityName() + " died at " + player.getBlockPos().toString());
+            GeyserPlayerHeads.debugLog(player.getEntityName() + " died at " + player.getBlockPos().toString());
             var head = Items.PLAYER_HEAD.getDefaultStack();
             if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
-                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt(source.getAttacker()));
+                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt(source.getAttacker(), player.getEntityName()));
             } else {
-                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt(source.getAttacker()));
+                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt(source.getAttacker(), player.getEntityName()));
             }
             if (GeyserPlayerHeads.config.dropNonPlayerKillHeads) {
                 dropStack(head);

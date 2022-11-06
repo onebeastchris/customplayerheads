@@ -5,11 +5,16 @@ public class ConfigOptions {
     public boolean dropNonPlayerKillHeads;
     public boolean commandEnabled;
     public int commandPermissionLevel;
+    public boolean debug;
 
-    public ConfigOptions(boolean pLore, boolean pPlayerKillHeads, boolean pCommand, int pLevel){
+    public boolean includeFloodgatePrefixInNames;
+
+    public ConfigOptions(boolean pLore, boolean pPlayerKillHeads, boolean pCommand, int pLevel, boolean pDebug, boolean pIncludeFloodgatePrefixInNames) {
         this.showLore = pLore;
         this.dropNonPlayerKillHeads = pPlayerKillHeads;
         this.commandEnabled = pCommand;
         this.commandPermissionLevel = pLevel;
+        this.debug = pDebug;
+        this.includeFloodgatePrefixInNames = pIncludeFloodgatePrefixInNames;
     }
 }

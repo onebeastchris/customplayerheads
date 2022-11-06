@@ -1,114 +1,151 @@
 package net.onebeastofchris.geyserplayerheads;
 
-
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.command.CommandManager;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
-import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
+import net.onebeastofchris.geyserplayerheads.utils.UsernameValidation;
 
 import java.util.UUID;
 import java.util.concurrent.Executors;
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class getSkull {
-    private static UUID a;
+public class    getSkull {
     public static int getPermLevel() {
         return GeyserPlayerHeads.config.commandPermissionLevel;
     }
 
-    /*public static LiteralCommandNode registeri(CommandDispatcher<ServerCommandSource> dispatcher) {
-        return dispatcher.register(literal("getskull")
-                .requires(source -> source.hasPermissionLevel(getPermLevel())) // Must be a game master to use the command. Command will not show up in tab completion or execute to non operators or any operator that is permission level 1.
-                .then(literal("bedrock"))
-                .then(argument("username", greedyString())
-                        .executes(ctx -> getBedrockSkull(ctx.getSource(), getString(ctx, "username")))) // You can deal with the arguments out here and pipe them into the command.
-                .executes(ctx -> noArgs(ctx))
-        );
-    }
-    */
     public static LiteralCommandNode register(CommandDispatcher<ServerCommandSource> dispatcher) {
         return dispatcher.register(
                 literal("getskull")
-                .requires(source -> source.hasPermissionLevel(getPermLevel())) // Must be a game master to use the command. Command will not show up in tab completion or execute to non operators or any operator that is permission level 1.
-                .then(
-                        (argument("JavaPlayer", EntityArgumentType.player()))
-                                .executes((context -> {
-                                    final PlayerEntity self = context.getSource().getPlayer();
-                                    assert self != null;
-                                    self.sendMessage(Text.literal("Java. THIS FEATURE IS NOT IMPLEMENTED YET!"));
-                                            return 1;
+                        .requires(source -> source.hasPermissionLevel(getPermLevel()))
+                        .then(
+                                argument("JavaPlayer", StringArgumentType.string())
+                                        .suggests((context, builder) -> {
+                                            PlayerManager playerManager = context.getSource().getServer().getPlayerManager();
+                                            return CommandSource.suggestMatching(
+                                                    playerManager.getPlayerList().stream()
+                                                            .filter(player -> !UsernameValidation.isBedrockPlayer(player))
+                                                            .map(PlayerEntity::getEntityName)
+                                                    , builder);
                                         })
-                                )
+                                        .executes(getSkull::jRun)
                         )
-                .then(literal("bedrock")
-                .then(
-                        (argument("BedrockPlayer", EntityArgumentType.player()))
-                        .executes((context) -> {
-                            final PlayerEntity self = context.getSource().getPlayer();
-                            if (self != null) {
-                                self.sendMessage(Text.literal("Bedrock. THIS FEATURE IS NOT IMPLEMENTED YET!"));
-                            }
+                        .then(literal("bedrock")
+                                .then(
+                                        (argument("BedrockPlayer", StringArgumentType.greedyString()))
+                                                .suggests((context, builder) -> {
+                                                    PlayerManager playerManager = context.getSource().getServer().getPlayerManager();
+                                                    return CommandSource.suggestMatching(
+                                                            playerManager.getPlayerList().stream()
+                                                                    .filter(UsernameValidation::isBedrockPlayer)
+                                                                    .map(PlayerEntity::getEntityName)
+                                                            , builder);
+                                                })
+                                                .executes(getSkull::bRun)
+                                ).executes((context -> {
+                                    context.getSource().sendError(Text.of("You must specify a Bedrock player name."));
+                                    return 0;
+                                }))
+                        )
+                        .executes(context -> {
+                            noArgs(context);
                             return 1;
-                        })))
-                .executes(context -> {
-                    noArgs(context);
-                    return 1;
-                })
+                        })
         );
-
     }
 
-    /*public static int getBedrockSkull(ServerCommandSource source, String message) throws CommandSyntaxException {
-        final PlayerEntity self = source.getPlayer();
-        assert self != null;
-        self.sendMessage(Text.literal("winner winner chicken dinner"));
-        var ref = new Object() {
-            long xuid = -2;
-        };
-        Executors.newSingleThreadExecutor().execute(() ->
-                ref.xuid = checkForBedrockPlayer(".onebeastchris"));
-        if (ref.xuid > 0) {
-            var head = Items.PLAYER_HEAD.getDefaultStack();
-            head.setNbt(PlayerJoinEvent.getTextureID().get(a).getBedrockNbt(null));
-            self.getInventory().insertStack(head);
-            GeyserPlayerHeads.getLogger().info("head");
-            return 1;
-        } else if (ref.xuid == 0)
-            self.sendMessage(Text.literal("Bedrock player not found in Geyser's Global API. Check for spelling, and make sure they have joined a Geyser server before."));
-        else self.sendMessage(Text.literal("Something went wrong..."));
-        GeyserPlayerHeads.getLogger().info(String.valueOf(ref.xuid));
-
-        return 1; // Success
-    }
-*/
-    public static int noArgs(CommandContext<ServerCommandSource> ctx) {
+    public static void noArgs(CommandContext<ServerCommandSource> ctx) {
         final ServerCommandSource source = ctx.getSource();
-        final PlayerEntity self = source.getPlayer(); // If not a player than the command ends
-        assert self != null;
-        self.sendMessage(Text.literal("THIS FEATURE IS NOT IMPLEMENTED YET!"));
-        return 1;
+        if (source.getEntity() instanceof PlayerEntity self) {
+            self.sendMessage(Text.literal("Usage: /getskull <JavaPlayer> or /getskull bedrock <BedrockPlayer>").formatted(Formatting.RED));
+        } else {
+            source.sendError(Text.of("You must be a player to use this command."));
+        }
     }
 
-    public static long checkForBedrockPlayer(String string) {
-        long xuid;
-        xuid = TextureApplier.getXuid(string.replace(FloodgateUser.FloodgatePrefix(), ""));
-        if (xuid > 0) {
-            a = new UUID(0, xuid);
-            PlayerJoinEvent.addToMap(a, string);
+    private static int jRun(CommandContext<ServerCommandSource> context) {
+        final PlayerEntity self = context.getSource().getPlayer();
+        if (self == null) {
+            context.getSource().sendError(Text.of("You must be a player to use this command."));
+            return 0;
+        } else {
+            return getJavaSkull(self, StringArgumentType.getString(context, "JavaPlayer"));
         }
-        return xuid;
+    }
+
+    private static int bRun(CommandContext<ServerCommandSource> context) {
+        final PlayerEntity self = context.getSource().getPlayer();
+        String bedrockPlayer = StringArgumentType.getString(context, "BedrockPlayer");
+        if (self == null) {
+            context.getSource().sendError(Text.of("You must be a player to use this command."));
+            return 0;
+        } else {
+            PlayerManager playerManager = context.getSource().getServer().getPlayerManager();
+            for (PlayerEntity player : playerManager.getPlayerList()) {
+                if (player.getEntityName().equalsIgnoreCase(bedrockPlayer) && UsernameValidation.isBedrockPlayer(player)){
+                    var head = new ItemStack(Items.PLAYER_HEAD);
+                    head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt(null, bedrockPlayer));
+                    self.getInventory().insertStack(head);
+                    self.sendMessage(Text.literal("Got the head of the Bedrock player " + bedrockPlayer).formatted(Formatting.GREEN));
+                    return 1;
+                }
+                }
+            }
+            Executors.newSingleThreadExecutor().execute(() -> getBedrockSkull(self, bedrockPlayer));
+            return 1;
+        }
+
+    public static int getJavaSkull(PlayerEntity self, String target) {
+        if (UsernameValidation.validateJavaUsername(target)) {
+            var head = new ItemStack(Items.PLAYER_HEAD);
+            head.setNbt(getJavaNbt(target));
+            self.getInventory().insertStack(head);
+            self.sendMessage(Text.literal("Got the head of the Java player " + target).formatted(Formatting.GREEN));
+            return 1;
+        } else {
+            self.sendMessage(Text.literal("Invalid Java player name").formatted(Formatting.RED));
+            return 0;
+        }
+    }
+
+    public static void getBedrockSkull(PlayerEntity self, String target) {
+        long BedrockUserXuid = UsernameValidation.onlineBedrockPlayerLookup(target, self);
+        if (BedrockUserXuid > 0) {
+            UUID FloodgateUUID = new UUID(0, BedrockUserXuid);
+            PlayerJoinEvent.addToMap(FloodgateUUID, target, BedrockUserXuid, true);
+            PlayerJoinEvent.getTextureID().get(FloodgateUUID);
+            if (!TextureApplier.isValidSkin()) {
+                self.sendMessage(Text.literal("Failed to get the skin file of the Bedrock player. Ask " + target + " to join a Geyser + Floodgate server. " ).formatted(Formatting.RED));
+                return;
+            }
+            var head = new ItemStack(Items.PLAYER_HEAD);
+            head.setNbt(PlayerJoinEvent.getTextureID().get(FloodgateUUID).getBedrockNbt(null, target));
+            self.getInventory().insertStack(head);
+            self.sendMessage(Text.literal("Got the head of the Bedrock player " + target).formatted(Formatting.GREEN));
+        }
+    }
+
+    public static NbtCompound getJavaNbt(String name) {
+
+        NbtCompound c = new NbtCompound();
+        NbtCompound c1 = new NbtCompound();
+
+        c1.putString("Name", Text.Serializer.toJson(Text.literal(name + "'s head").styled(style -> style.withItalic(false))));
+        c.putString("SkullOwner", name);
+        c.put("display", c1);
+        return c;
     }
 }

@@ -24,8 +24,10 @@ public class ServerRequest {
         try {
             resp = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
+            GeyserPlayerHeads.getLogger().error("Error while sending request to " + pUrl);
             throw new RuntimeException(e);
         }
+        GeyserPlayerHeads.debugLog("webRequest: " + new Gson().fromJson(resp.body(), JsonObject.class).toString());
         return new Gson().fromJson(resp.body(), JsonObject.class);
     }
 }

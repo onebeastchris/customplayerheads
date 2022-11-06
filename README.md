@@ -13,9 +13,12 @@ Current featureset:
 - names bedrock playerhead
 - hooks in the web api once upon player join, async request to not freeze the game
 - if killed by player: adds "killed by [player]" in the lore of the item!
+- optional "/getskull" command - you can get heads for java players, and bedrock players. As long as they have a skin uploaded to the GeyserAPI (done automatically when they join any Geyser+floodgate server)
+- option to disable prefixes showing in the head names
+
 
 Left to be added:
-- optional command to get player heads
+Nothing furhter planned for now! I am open for suggestions though ^^
 
 Huge thanks to Jens, the Fabric discord, and Elysian members for helping me test and develop this mod!
 

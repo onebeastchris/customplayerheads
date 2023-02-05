@@ -25,7 +25,7 @@ public class GeyserPlayerHeads implements ModInitializer {
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
     private static Logger logger;
-    public static ConfigOptions config = new ConfigOptions(true, true, false, 2, false, true);
+    public static ConfigOptions config = new ConfigOptions(true, true, false, 2, false, true, false);
     public Gson GsonConfigFile = new GsonBuilder().setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
     Path configPath = Paths.get("config/geyserplayerheads.json");
 

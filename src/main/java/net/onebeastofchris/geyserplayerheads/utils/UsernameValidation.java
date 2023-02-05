@@ -6,7 +6,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
 import net.onebeastofchris.geyserplayerheads.TextureApplier;
-import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
 
 public class UsernameValidation {
 
@@ -48,4 +47,10 @@ public class UsernameValidation {
         return -1;
     }
 
+    public static boolean isRealPlayer(PlayerEntity player){
+        if (GeyserPlayerHeads.config.fakePlayersDropHeads) {
+            return true;
+        } else return player.getClass() == ServerPlayerEntity.class;
+
+    }
 }

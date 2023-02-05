@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
 import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
 import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
+import net.onebeastofchris.geyserplayerheads.utils.UsernameValidation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,17 +27,24 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "dropLoot", at = @At("TAIL"))
     private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
         if (this.livingEntity instanceof PlayerEntity player) {
+
             GeyserPlayerHeads.debugLog(player.getEntityName() + " died at " + player.getBlockPos().toString());
+
             var head = Items.PLAYER_HEAD.getDefaultStack();
+
             if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
                 head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt(source.getAttacker(), player.getEntityName()));
             } else {
                 head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt(source.getAttacker(), player.getEntityName()));
             }
             if (GeyserPlayerHeads.config.dropNonPlayerKillHeads) {
-                dropStack(head);
+                if (UsernameValidation.isRealPlayer(player)){
+                    dropStack(head);
+                }
             } else if (source.getAttacker() instanceof PlayerEntity){
-                dropStack(head);
+                if (UsernameValidation.isRealPlayer(player)){
+                    dropStack(head);
+                }
             }
         }
     }

@@ -1,5 +1,8 @@
 Small fabric mod to drop player heads upon player death that's compatible with bedrock players joined through geyser!
-Why a mod instead of a datapack? Mods, unlike datapacks, allow for custom skin files on playerheads which are necessary in the approach here to get bedrock player skins. Code is messy, since i have no clue what i'm doing!
+
+Supported versions: 1.19.2-1.19.4 fabric
+
+Why a mod instead of a datapack? Mods, unlike datapacks, allow for custom skin files on playerheads which are necessary in the approach here to get bedrock player skins.
 
 Requires FabricAPI! Floodgate on the backend is optional, but necessary if you're using a prefix other than ".".
 Because of https://bugs.mojang.com/browse/MC-174496, it is recommended to use a mod like https://modrinth.com/mod/headfix to keep Custom Head Names when breaking the head.

@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "GeyserPlayerHeads",
-  "description": "An attempt to get player heads for bedrock players working on geyser+fabric",
+  "description": "A mod that drops player heads. But with Geyser support!",
   "authors": [
     "onebeastofchris"
   ],
   "contact": {
-    "homepage": "",
-    "sources": ""
+    "homepage": "https://github.com/onebeastchris/fabricgeyserplayerheads",
+    "sources": "https://github.com/onebeastchris/fabricgeyserplayerheads"
   },
 
   "license": "MIT",

@@ -5,13 +5,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
-import net.onebeastofchris.geyserplayerheads.events.PlayerJoinEvent;
-import net.onebeastofchris.geyserplayerheads.utils.FloodgateUser;
-import net.onebeastofchris.geyserplayerheads.utils.UsernameValidation;
+import net.onebeastofchris.geyserplayerheads.texture.TextureUtils;
+import net.onebeastofchris.geyserplayerheads.utils.FloodgateUtil;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,26 +25,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
+    @Shadow protected abstract void drop(DamageSource source);
+
     @Inject(method = "dropLoot", at = @At("TAIL"))
     private void gph$dropHead(DamageSource source, boolean causedByPlayer, CallbackInfo ci) {
-        if (this.livingEntity instanceof PlayerEntity player) {
+        if (this.livingEntity instanceof ServerPlayerEntity player && GeyserPlayerHeads.config.isShouldDropHeadsOnDeath()) {
+            boolean isBedrock = FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName());
+            ItemStack skull = TextureUtils.getSkull(player.getUuid(), player.getEntityName(), isBedrock);
 
-            GeyserPlayerHeads.debugLog(player.getEntityName() + " died at " + player.getBlockPos().toString());
-
-            var head = Items.PLAYER_HEAD.getDefaultStack();
-
-            if (player.getEntityName().startsWith(".") || FloodgateUser.isFloodgatePlayer(player.getUuid())) {
-                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getBedrockNbt(source.getAttacker(), player.getEntityName()));
-            } else {
-                head.setNbt(PlayerJoinEvent.getTextureID().get(player.getUuid()).getJavaNbt(source.getAttacker(), player.getEntityName()));
-            }
-            if (GeyserPlayerHeads.config.dropNonPlayerKillHeads) {
-                if (UsernameValidation.isRealPlayer(player)){
-                    dropStack(head);
+            if (skull != null) {
+                ItemStack head = null;
+                if (source.getAttacker() instanceof PlayerEntity killer) {
+                    if (GeyserPlayerHeads.config.isShowLore()) {
+                        // case: player killed by player, with lore
+                        head = TextureUtils.addLore(skull, killer);
+                    } else {
+                        // case: player killed by player, no lore
+                        head = skull;
+                    }
+                // case: player killed by non-player
+                } else if (GeyserPlayerHeads.config.isDropNonPlayerKillHeads()) {
+                    head = TextureUtils.addLore(skull, null);
                 }
-            } else if (source.getAttacker() instanceof PlayerEntity){
-                if (UsernameValidation.isRealPlayer(player)){
-                    dropStack(head);
+
+                // drop the head if exists
+                if (head != null) {
+                    this.dropStack(head);
                 }
             }
         }

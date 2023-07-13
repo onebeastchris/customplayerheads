@@ -33,6 +33,9 @@ public final class CPHConfig {
     @Comment("What should the lore say?")
     private String lore = "Killed by %player%";
 
+    @Comment("What should the name of the head be?")
+    private String name = "%player%'s Head";
+
     public boolean isShouldDropHeadsOnDeath() {
         return shouldDropHeadsOnDeath;
     }
@@ -66,4 +69,7 @@ public final class CPHConfig {
     }
 
 
+    public String getName() {
+        return name;
+    }
 }

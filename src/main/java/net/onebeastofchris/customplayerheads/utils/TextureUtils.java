@@ -26,7 +26,7 @@ public class TextureUtils {
         skullownertag.put("Properties", texturetag);
         skullownertag.putUuid("Id", id);
         nbtCompound.put("SkullOwner", skullownertag);
-        displaytag.putString("Name", getItalicJsonText(shownname));
+        displaytag.putString("Name", getHeadName(shownname));
         nbtCompound.put("display", displaytag);
 
         return nbtCompound;
@@ -37,15 +37,15 @@ public class TextureUtils {
         nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile));
 
         NbtCompound displaytag = new NbtCompound();
-        displaytag.putString("Name", getItalicJsonText(nameFromProfile(profile)));
+        displaytag.putString("Name", getHeadName(nameFromProfile(profile)));
         nbtCompound.put("display", displaytag);
 
         return nbtCompound;
     }
 
     private static String nameFromProfile(GameProfile profile) {
-        if (CustomPlayerHeads.config.isShowFloodgatePrefix()) {
-            return FloodgateUtil.FloodgatePrefix() + profile.getName();
+        if (!CustomPlayerHeads.config.isShowFloodgatePrefix()) {
+            return profile.getName().replace(FloodgateUtil.FloodgatePrefix(), "");
         }
         return profile.getName();
     }
@@ -62,14 +62,14 @@ public class TextureUtils {
         return nbt;
     }
 
+    private static String getHeadName(String name) {
+        return CustomPlayerHeads.config.getName().replace("%player%", name);
+    }
     private static String getAttacker(PlayerEntity player) {
-        String attackerName = player.getEntityName();
-        if (CustomPlayerHeads.config.isShowFloodgatePrefix() && FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName())) {
-            attackerName = FloodgateUtil.FloodgatePrefix() + player.getEntityName();
-        }
+        String attackerName = nameFromProfile(player.getGameProfile());
         return CustomPlayerHeads.config.getLore().replace("%player%", attackerName);
     }
-    public static String getItalicJsonText(String string) {
+    private static String getItalicJsonText(String string) {
         return Text.Serializer.toJson(Text.literal(string).styled(style -> style.withItalic(true)));
     }
 }

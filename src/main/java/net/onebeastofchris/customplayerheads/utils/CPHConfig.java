@@ -1,4 +1,4 @@
-package net.onebeastofchris.geyserplayerheads.utils;
+package net.onebeastofchris.customplayerheads.utils;
 
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
@@ -6,7 +6,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 @ConfigSerializable
 @SuppressWarnings("FieldMayBeFinal")
-public final class GPHConfig {
+public final class CPHConfig {
 
     @Comment("Should the heads drop on death?")
     private boolean shouldDropHeadsOnDeath = true;
@@ -23,7 +23,8 @@ public final class GPHConfig {
     @Comment("The permission level required to use the /getskull command.")
     private int commandPermissionLevel = 2;
 
-    @Comment("Whether to include the Floodgate prefix in the name of the head. (e.g. .steve instead of steve)")
+    @Comment("For Geyser/Floodgate users:" +
+            "Whether to include the Floodgate prefix in the name of the head. (e.g. .steve instead of steve)")
     private boolean showFloodgatePrefix = true;
 
     @Comment("Whether to enable debug mode. This will log more information to the console.")

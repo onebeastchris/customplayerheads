@@ -1,12 +1,13 @@
-package net.onebeastofchris.geyserplayerheads.utils;
+package net.onebeastofchris.customplayerheads.utils;
 
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
+import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerUtils {
 
@@ -25,7 +26,7 @@ public class PlayerUtils {
         String lowerCasePlayerName = playername.toLowerCase().replace(FloodgateUtil.FloodgatePrefix(), "");
 
         if (bedrockXUIDmap.get(lowerCasePlayerName) != null) {
-            GeyserPlayerHeads.debugLog("Bedrock player" + playername + " is cached, using their cached XUID: " + bedrockXUIDmap.get(playername));
+            CustomPlayerHeads.debugLog("Bedrock player" + playername + " is cached, using their cached XUID: " + bedrockXUIDmap.get(playername));
             return bedrockXUIDmap.get(lowerCasePlayerName);
         }
 
@@ -43,7 +44,7 @@ public class PlayerUtils {
                     return null;
                 }
                 default -> {
-                    GeyserPlayerHeads.debugLog("GetXuid: " + e.getMessage());
+                    CustomPlayerHeads.debugLog("GetXuid: " + e.getMessage());
                     self.sendMessage(Text.literal("An error occurred while trying to get the XUID of that Bedrock player.").formatted(Formatting.RED));
                     return null;
                 }
@@ -56,7 +57,7 @@ public class PlayerUtils {
             try {
                 return getJson.get("value").getAsString();
             } catch (Exception e) {
-                GeyserPlayerHeads.debugLog("value (geyserapi): " + e.getMessage());
+                CustomPlayerHeads.debugLog("value (geyserapi): " + e.getMessage());
                 return null;
             }
         } else {
@@ -64,7 +65,7 @@ public class PlayerUtils {
             try {
                 return getJson.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
             } catch (Exception e) {
-                GeyserPlayerHeads.debugLog("TextureIdLookup: " + e.getMessage());
+                CustomPlayerHeads.debugLog("TextureIdLookup: " + e.getMessage());
                 return null;
             }
         }
@@ -84,5 +85,18 @@ public class PlayerUtils {
             return null;
         }
         return uuid.getAsString();
+    }
+
+    public static UUID toUUID(String target, boolean isBedrock) {
+        if (isBedrock) {
+            Long xuid = Long.parseLong(target);
+            UUID a = new UUID(0,  xuid);
+            CustomPlayerHeads.getLogger().warn(a + " is a bedrock player");
+            return a;
+        } else {
+            UUID a = UUID.fromString(target);
+            CustomPlayerHeads.getLogger().warn(a + " is a java player");
+            return UUID.fromString(target);
+        }
     }
 }

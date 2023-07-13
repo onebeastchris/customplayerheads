@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "geyserplayerheads",
+  "id": "customplayerheads",
   "version": "${version}",
 
-  "name": "GeyserPlayerHeads",
+  "name": "CustomPlayerHeads",
   "description": "A mod that drops player heads. But with Geyser support!",
   "authors": [
     "onebeastofchris"
@@ -14,16 +14,16 @@
   },
 
   "license": "MIT",
-  "icon": "assets/geyserplayerheads/icon.png",
+  "icon": "assets/customplayerheads/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads"
+      "net.onebeastofchris.customplayerheads.CustomPlayerHeads"
     ]
   },
   "mixins": [
-    "geyserplayerheads.mixins.json"
+    "customplayerheads.mixins.json"
   ],
 
   "depends": {

@@ -1,8 +1,8 @@
-package net.onebeastofchris.geyserplayerheads.utils;
+package net.onebeastofchris.customplayerheads.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
+import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +15,7 @@ import static java.net.http.HttpClient.newHttpClient;
 public class WebUtil {
 
     public JsonObject webRequest(String url) {
-        GeyserPlayerHeads.debugLog("webRequest: " + url);
+        CustomPlayerHeads.debugLog("webRequest: " + url);
         var client = newHttpClient();
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -26,11 +26,11 @@ public class WebUtil {
         try {
             resp = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            GeyserPlayerHeads.getLogger().error("Error while sending request to " + url);
+            CustomPlayerHeads.getLogger().error("Error while sending request to " + url);
             throw new RuntimeException(e);
         }
-        GeyserPlayerHeads.debugLog("webRequest: " + new Gson().fromJson(resp.body(), JsonObject.class).toString());
-        GeyserPlayerHeads.debugLog("webRequest: " + resp.body());
+        CustomPlayerHeads.debugLog("webRequest: " + new Gson().fromJson(resp.body(), JsonObject.class).toString());
+        CustomPlayerHeads.debugLog("webRequest: " + resp.body());
 
         return new Gson().fromJson(resp.body(), JsonObject.class);
     }

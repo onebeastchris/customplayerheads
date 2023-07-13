@@ -1,4 +1,4 @@
-package net.onebeastofchris.geyserplayerheads.texture;
+package net.onebeastofchris.customplayerheads.texture;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,8 +7,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
-import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
-import net.onebeastofchris.geyserplayerheads.utils.FloodgateUtil;
+import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
+import net.onebeastofchris.customplayerheads.utils.FloodgateUtil;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class TextureUtils {
     }
 
     private static String nameFromProfile(GameProfile profile) {
-        if (GeyserPlayerHeads.config.isShowFloodgatePrefix()) {
+        if (CustomPlayerHeads.config.isShowFloodgatePrefix()) {
             return FloodgateUtil.FloodgatePrefix() + profile.getName();
         }
         return profile.getName();
@@ -66,7 +66,7 @@ public class TextureUtils {
 
     private static String getAttacker(PlayerEntity player) {
         String attackerName = player.getEntityName();
-        if (GeyserPlayerHeads.config.isShowFloodgatePrefix()) {
+        if (CustomPlayerHeads.config.isShowFloodgatePrefix()) {
             if (FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName())) {
                 return FloodgateUtil.FloodgatePrefix() + attackerName;
             }
@@ -82,7 +82,7 @@ public class TextureUtils {
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + textureID + "\"}}}";
             return Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
         } catch (Exception e) {
-            GeyserPlayerHeads.debugLog("Error while encoding textureID" + e.getMessage());
+            CustomPlayerHeads.debugLog("Error while encoding textureID" + e.getMessage());
             return null;
         }
     }

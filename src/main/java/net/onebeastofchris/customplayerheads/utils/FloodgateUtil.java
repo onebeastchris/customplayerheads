@@ -1,15 +1,22 @@
-package net.onebeastofchris.geyserplayerheads.utils;
+package net.onebeastofchris.customplayerheads.utils;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
+import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.UUID;
 
 public class FloodgateUtil {
+
+    static boolean warned = false;
     public static boolean isFloodgatePresent() {
-        return FabricLoader.getInstance().isModLoaded("floodgate");
+        boolean isFloodgatePresent = FabricLoader.getInstance().isModLoaded("floodgate");
+        if (!isFloodgatePresent && !warned) {
+            CustomPlayerHeads.getLogger().info("Floodgate is not present, but is recommended for this mod to work properly for Bedrock players.");
+            warned = true;
+        }
+        return isFloodgatePresent;
     }
 
     public static boolean isBedrockPlayer(UUID uuid, String playerName) {
@@ -17,7 +24,7 @@ public class FloodgateUtil {
         if (!isFloodgatePresent()) {
             return fallback(uuid, playerName);
         } else if (FloodgateApi.getInstance() == null) {
-            GeyserPlayerHeads.getLogger().info("Floodgate seems to be installed, but GeyserPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
+            CustomPlayerHeads.getLogger().info("Floodgate seems to be installed, but CustomPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
             return fallback(uuid, playerName);
         } else
             return FloodgateApi.getInstance().isFloodgatePlayer(uuid) && !isLinked(uuid);
@@ -27,10 +34,11 @@ public class FloodgateUtil {
         if (!isFloodgatePresent()) {
             return ".";
         } else if (FloodgateApi.getInstance() == null) {
-            GeyserPlayerHeads.getLogger().info("Floodgate seems to be installed, but GeyserPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
+            CustomPlayerHeads.getLogger().info("Floodgate seems to be installed, but CustomPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
             return ".";
-        } else
+        } else {
             return FloodgateApi.getInstance().getPlayerPrefix();
+        }
     }
 
     public static boolean isLinked(UUID uuid) {
@@ -38,7 +46,7 @@ public class FloodgateUtil {
         if (!isFloodgatePresent()) {
             return false;
         } else if (FloodgateApi.getInstance() == null) {
-            GeyserPlayerHeads.getLogger().error("Floodgate seems to be installed, but GeyserPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
+            CustomPlayerHeads.getLogger().error("Floodgate seems to be installed, but CustomPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
             return false;
         } else {
             FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(uuid);

@@ -10,6 +10,6 @@
   "mixins": [
     "LivingEntityMixin"
   ],
-  "package": "net.onebeastofchris.geyserplayerheads.mixin",
+  "package": "net.onebeastofchris.customplayerheads.mixin",
   "required": true
 }

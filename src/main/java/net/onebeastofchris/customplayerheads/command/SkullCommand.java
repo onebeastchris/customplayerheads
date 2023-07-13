@@ -1,4 +1,4 @@
-package net.onebeastofchris.geyserplayerheads.command;
+package net.onebeastofchris.customplayerheads.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -12,9 +12,9 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
-import net.onebeastofchris.geyserplayerheads.texture.TextureUtils;
-import net.onebeastofchris.geyserplayerheads.utils.PlayerUtils;
+import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
+import net.onebeastofchris.customplayerheads.texture.TextureUtils;
+import net.onebeastofchris.customplayerheads.utils.PlayerUtils;
 
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -24,7 +24,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class SkullCommand {
     private static int getPermLevel() {
-        return GeyserPlayerHeads.config.getCommandPermissionLevel();
+        return CustomPlayerHeads.config.getCommandPermissionLevel();
     }
 
     public static LiteralCommandNode register(CommandDispatcher<ServerCommandSource> dispatcher) {

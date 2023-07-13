@@ -1,9 +1,9 @@
 package net.onebeastofchris.geyserplayerheads;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.onebeastofchris.geyserplayerheads.register.CommandRegister;
-import net.onebeastofchris.geyserplayerheads.register.EventRegister;
+import net.onebeastofchris.geyserplayerheads.command.SkullCommand;
 import net.onebeastofchris.geyserplayerheads.utils.GPHConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,23 +42,16 @@ public class GeyserPlayerHeads implements ModInitializer {
             getLogger().error("Error while loading config!" + e.getMessage());
             throw new RuntimeException(e);
         }
+
         //old config check!
         if (oldConfigPath.toFile().exists()) {
             logger.warn("You are using the old config file! Please delete it and use the new config file, which is located at config/geyserplayerheads.conf");
         }
 
         if (config.isCommandEnabled()) {
-            CommandRegister.registerCommand();
-            logger.info("/getskull command enabled!");
+            CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SkullCommand.register(dispatcher));
+            logger.debug("/getskull command enabled!");
         }
-        if (!FabricLoader.getInstance().isModLoaded("floodgate")) {
-            logger.info("Floodgate is not installed! We will check the bedrock . prefix, or the UUID version.");
-        }
-
-        register();
-    }
-    private void register() {
-        EventRegister.registerJoinEvent();
     }
 
     public static Logger getLogger() {

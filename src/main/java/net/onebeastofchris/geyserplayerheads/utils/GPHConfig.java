@@ -8,7 +8,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @SuppressWarnings("FieldMayBeFinal")
 public final class GPHConfig {
 
-    @Comment("Should the heads drop on death? Affects both java and bedrock player deaths.")
+    @Comment("Should the heads drop on death?")
     private boolean shouldDropHeadsOnDeath = true;
 
     @Comment("Whether to show lore \"killed by <player>\" on heads dropped by players.")

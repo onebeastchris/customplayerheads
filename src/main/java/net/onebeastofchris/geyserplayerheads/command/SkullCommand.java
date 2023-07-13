@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -81,7 +82,7 @@ public class SkullCommand {
             context.getSource().sendError(Text.of("You must be a player to use this command."));
             return 0;
         } else {
-            Executors.newSingleThreadExecutor().execute(() -> getJavaSkull(self, StringArgumentType.getString(context, "JavaPlayer")));
+            Executors.newSingleThreadExecutor().execute(() -> getSkull(self, StringArgumentType.getString(context, "JavaPlayer"), false));
             return 1;
         }
     }
@@ -92,40 +93,35 @@ public class SkullCommand {
             context.getSource().sendError(Text.of("You must be a player to use this command."));
             return 0;
         } else {
-            Executors.newSingleThreadExecutor().execute(() -> getBedrockSkull(self, StringArgumentType.getString(context, "BedrockPlayer")));
+            Executors.newSingleThreadExecutor().execute(() -> getSkull(self, StringArgumentType.getString(context, "BedrockPlayer"), true));
             return 1;
         }
     }
 
-    public static void getJavaSkull(PlayerEntity self, String target) {
-        UUID uuid = PlayerUtils.getJavaUUID(target);
-        if (uuid != null) {
-            ItemStack head = TextureUtils.getSkull(uuid, target, false);
-
-            if (head != null) {
-                self.getInventory().insertStack(head);
-                self.sendMessage(Text.literal("Got the head of the Java player " + target).formatted(Formatting.GREEN));
-            } else {
-                self.sendMessage(Text.literal("Invalid Java player name").formatted(Formatting.RED));
-            }
+    public static void getSkull(PlayerEntity self, String target, boolean isBedrock) {
+        String lookup;
+        if (isBedrock) {
+            lookup = PlayerUtils.xuidLookup(target, self);
         } else {
-            self.sendMessage(Text.literal("Invalid Java player name").formatted(Formatting.RED));
+            lookup = PlayerUtils.getJavaUUID(target);
         }
-    }
 
-    public static void getBedrockSkull(PlayerEntity self, String target) {
-        String xuid = PlayerUtils.onlineBedrockPlayerLookup(target, self);
+        if (lookup != null) {
+            String value = PlayerUtils.getTextureID(lookup, isBedrock);
+            if (value != null) {
+                ItemStack head = Items.PLAYER_HEAD.getDefaultStack();
+                UUID uuid = UUID.fromString(lookup);
+                head.setNbt(TextureUtils.nbtFromTextureValue(uuid, value, target));
 
-        if (xuid != null) {
-            UUID FloodgateUUID = new UUID(0, Long.valueOf(xuid, 16));
-
-            ItemStack head = TextureUtils.getSkull(FloodgateUUID, target, true);
-            if (head != null) {
                 self.getInventory().insertStack(head);
-                self.sendMessage(Text.literal("Got the head of the Bedrock player " + target).formatted(Formatting.GREEN));
+                self.sendMessage(Text.literal("Got the head of the player: " + target).formatted(Formatting.GREEN));
             } else {
-                self.sendMessage(Text.literal("Failed to get the skin file of the Bedrock player. Ask " + target + " to join a Geyser + Floodgate server. ").formatted(Formatting.RED));
-            }
+                if (isBedrock) {
+                    self.sendMessage(Text.literal("Failed to get the skin file of the Bedrock player. Ask " + target + " to join a Geyser + Floodgate server. ").formatted(Formatting.RED));
+                } else {
+                    self.sendMessage(Text.literal("Failed to get the skin file of the Java player.").formatted(Formatting.RED));
+                }
+            };
         }
     }
 }

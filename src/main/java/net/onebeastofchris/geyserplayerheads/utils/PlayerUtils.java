@@ -7,30 +7,26 @@ import net.minecraft.util.Formatting;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 public class PlayerUtils {
 
-    public static HashMap<String, UUID> javaUUIDmap = new HashMap<>();
-    public static HashMap<String, UUID> bedrockUUIDmap = new HashMap<>();
+    public static HashMap<String, String> javaUUIDmap = new HashMap<>();
+    public static HashMap<String, String> bedrockXUIDmap = new HashMap<>();
     private static final String GEYSER_XUID_API = "https://api.geysermc.org/v2/xbox/xuid/";
     private static final String GEYSER_SKIN_API = "https://api.geysermc.org/v2/skin/";
-
     private static final String MOJANG_SESSIONSERVER = "https://sessionserver.mojang.com/session/minecraft/profile/";
-
     private static final String MOJANG_UUID = "https://api.mojang.com/users/profiles/minecraft/";
 
     public static boolean isBedrockPlayer(PlayerEntity player) {
         return FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName());
     }
 
-    //used for the getskull command
-    public static String onlineBedrockPlayerLookup(String playername, PlayerEntity self) {
+    public static String xuidLookup(String playername, PlayerEntity self) {
         String lowerCasePlayerName = playername.toLowerCase().replace(FloodgateUtil.FloodgatePrefix(), "");
 
-        if (bedrockUUIDmap.get(lowerCasePlayerName) != null) {
-            GeyserPlayerHeads.debugLog("Bedrock player" + playername + " is cached, using their cached XUID: " + bedrockUUIDmap.get(playername).getLeastSignificantBits());
-            return String.valueOf(bedrockUUIDmap.get(playername).getLeastSignificantBits());
+        if (bedrockXUIDmap.get(lowerCasePlayerName) != null) {
+            GeyserPlayerHeads.debugLog("Bedrock player" + playername + " is cached, using their cached XUID: " + bedrockXUIDmap.get(playername));
+            return bedrockXUIDmap.get(lowerCasePlayerName);
         }
 
         var xuidJson = new WebUtil().webRequest(GEYSER_XUID_API + lowerCasePlayerName);
@@ -58,9 +54,9 @@ public class PlayerUtils {
         if (isBedrock) {
             JsonObject getJson = new WebUtil().webRequest(GEYSER_SKIN_API + lookupID);
             try {
-                return getJson.get("texture_id").getAsString();
+                return getJson.get("value").getAsString();
             } catch (Exception e) {
-                GeyserPlayerHeads.debugLog("TextureIdLookup: " + e.getMessage());
+                GeyserPlayerHeads.debugLog("value (geyserapi): " + e.getMessage());
                 return null;
             }
         } else {
@@ -74,8 +70,10 @@ public class PlayerUtils {
         }
     }
 
-    public static UUID getJavaUUID(String playername) {
+    public static String getJavaUUID(String playername) {
         String lowerCasePlayerName = playername.toLowerCase();
+
+        // cache the UUIDs, so we don't have to make a web request every time
         if (javaUUIDmap.get(lowerCasePlayerName) != null) {
             return javaUUIDmap.get(lowerCasePlayerName);
         }
@@ -85,20 +83,6 @@ public class PlayerUtils {
         if (uuid == null) {
             return null;
         }
-        String uuidString = uuid.getAsString();
-
-        // Insert hyphens at specific positions to match UUID format
-        StringBuilder formattedUuid = new StringBuilder(uuidString);
-        formattedUuid.insert(8, "-");
-        formattedUuid.insert(13, "-");
-        formattedUuid.insert(18, "-");
-        formattedUuid.insert(23, "-");
-
-        try {
-            return UUID.fromString(formattedUuid.toString());
-        } catch (Exception e) {
-            GeyserPlayerHeads.debugLog("JavaUUIDLookup: " + e.getMessage());
-            return null;
-        }
+        return uuid.getAsString();
     }
 }

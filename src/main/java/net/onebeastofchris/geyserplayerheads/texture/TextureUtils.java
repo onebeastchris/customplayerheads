@@ -1,20 +1,20 @@
 package net.onebeastofchris.geyserplayerheads.texture;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.onebeastofchris.geyserplayerheads.GeyserPlayerHeads;
 import net.onebeastofchris.geyserplayerheads.utils.FloodgateUtil;
-import net.onebeastofchris.geyserplayerheads.utils.HeadHolder;
 
 import java.util.Base64;
 import java.util.UUID;
 
 public class TextureUtils {
-    public static NbtCompound getNbt(String texturevalue, String shownname) {
+    public static NbtCompound nbtFromTextureValue(UUID id, String texturevalue, String shownname) {
         NbtCompound nbtCompound = new NbtCompound();
         NbtCompound skullownertag = new NbtCompound();
         NbtCompound texturetag = new NbtCompound();
@@ -26,7 +26,7 @@ public class TextureUtils {
         texturelist.add(valuetag);
         texturetag.put("textures", texturelist);
         skullownertag.put("Properties", texturetag);
-        skullownertag.putIntArray("Id", new int[]{1, 1, 1, 1});
+        skullownertag.putUuid("Id", id);
         nbtCompound.put("SkullOwner", skullownertag);
         displaytag.putString("Name", getItalicJsonText(shownname));
         nbtCompound.put("display", displaytag);
@@ -34,18 +34,34 @@ public class TextureUtils {
         return nbtCompound;
     }
 
-    public static ItemStack addLore(ItemStack itemStack, PlayerEntity player) {
-        NbtCompound nbt = itemStack.getNbt();
+    public static NbtCompound nbtFromProfile(GameProfile profile) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(nbtCompound, profile));
 
-        assert nbt != null;
+        NbtCompound displaytag = new NbtCompound();
+        displaytag.putString("Name", getItalicJsonText(nameFromProfile(profile)));
+        nbtCompound.put("display", displaytag);
+
+        return nbtCompound;
+    }
+
+    private static String nameFromProfile(GameProfile profile) {
+        if (GeyserPlayerHeads.config.isShowFloodgatePrefix()) {
+            return FloodgateUtil.FloodgatePrefix() + profile.getName();
+        }
+        return profile.getName();
+    }
+
+    public static NbtCompound addLore(NbtCompound nbt, PlayerEntity player) {
         NbtCompound display = nbt.getCompound("display");
+
         NbtList loreList = new NbtList();
         loreList.add(NbtString.of(getItalicJsonText(getAttacker(player))));
+
         display.put("Lore", loreList);
         nbt.put("display", display);
-        itemStack.setNbt(nbt);
 
-        return itemStack;
+        return nbt;
     }
 
     private static String getAttacker(PlayerEntity player) {
@@ -55,11 +71,12 @@ public class TextureUtils {
                 return FloodgateUtil.FloodgatePrefix() + attackerName;
             }
         }
-        return attackerName;
+        return "Killed by " + attackerName;
     }
-    public static String getItalicJsonText(String a) {
-        return Text.Serializer.toJson(Text.literal(a).styled(style -> style.withItalic(true)));
+    public static String getItalicJsonText(String string) {
+        return Text.Serializer.toJson(Text.literal(string).styled(style -> style.withItalic(true)));
     }
+
     public static String getEncodedTextureID(String textureID) {
         try {
             String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + textureID + "\"}}}";
@@ -67,18 +84,6 @@ public class TextureUtils {
         } catch (Exception e) {
             GeyserPlayerHeads.debugLog("Error while encoding textureID" + e.getMessage());
             return null;
-        }
-    }
-    public static ItemStack getSkull(UUID uuid, String name, boolean isBedrock) {
-        HeadHolder holder = TextureMap.getEntry(uuid);
-        if (holder != null) {
-            GeyserPlayerHeads.debugLog("Found head for " + name + " in cache");
-            return holder.getHead();
-        } else {
-            TextureMap.addEntry(name, uuid, isBedrock);
-            GeyserPlayerHeads.debugLog("Added head for " + name + " to cache");
-            GeyserPlayerHeads.debugLog(TextureMap.getEntry(uuid).toString());
-            return TextureMap.getEntry(uuid).getHead();
         }
     }
 }

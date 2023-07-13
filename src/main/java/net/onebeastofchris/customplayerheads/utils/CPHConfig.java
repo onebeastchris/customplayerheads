@@ -30,6 +30,9 @@ public final class CPHConfig {
     @Comment("Whether to enable debug mode. This will log more information to the console.")
     private boolean debug = false;
 
+    @Comment("What should the lore say?")
+    private String lore = "Killed by %player%";
+
     public boolean isShouldDropHeadsOnDeath() {
         return shouldDropHeadsOnDeath;
     }
@@ -52,6 +55,10 @@ public final class CPHConfig {
 
     public boolean isShowFloodgatePrefix() {
         return showFloodgatePrefix;
+    }
+
+    public String getLore() {
+        return lore;
     }
 
     public boolean isDebug() {

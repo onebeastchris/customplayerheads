@@ -17,7 +17,7 @@ import java.util.List;
 
 public class CustomPlayerHeads implements ModInitializer {
     private static Logger logger;
-    List<Path> oldConfigPaths = List.of(Paths.get("config/customplayerheads.json"), Paths.get("geyserplayerheads.json"));
+    List<Path> oldConfigPaths = List.of(Paths.get("geyserplayerheads.json"), Paths.get("geyserplayerheads.conf"));
     Path newConfigPath = Paths.get("customplayerheads.conf");
 
     public static CPHConfig config;
@@ -25,7 +25,7 @@ public class CustomPlayerHeads implements ModInitializer {
     @Override
     public void onInitialize() {
 
-        logger = LoggerFactory.getLogger("gph");
+        logger = LoggerFactory.getLogger("customplayerheads");
         logger.info("CustomPlayerHeads starting now");
 
         final HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
@@ -45,8 +45,8 @@ public class CustomPlayerHeads implements ModInitializer {
 
         //old configs check!
         for (Path oldConfigPath : oldConfigPaths) {
-            if (oldConfigPath.toFile().exists()) {
-                logger.warn("You have an old config file! Please delete it and use the new config file, which is located at /config/customplayerheads.conf");
+            if (FabricLoader.getInstance().getConfigDir().resolve(oldConfigPath).toFile().exists()) {
+                logger.warn("[CustomPlayerHeads] You have an old config file! Please delete it and use the new config file, which is located at /config/customplayerheads.conf");
             }
         }
 

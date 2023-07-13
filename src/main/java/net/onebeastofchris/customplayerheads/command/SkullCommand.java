@@ -13,7 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
-import net.onebeastofchris.customplayerheads.texture.TextureUtils;
+import net.onebeastofchris.customplayerheads.utils.TextureUtils;
 import net.onebeastofchris.customplayerheads.utils.PlayerUtils;
 
 import java.util.UUID;
@@ -110,7 +110,7 @@ public class SkullCommand {
             String value = PlayerUtils.getTextureID(lookup, isBedrock);
             if (value != null) {
                 ItemStack head = Items.PLAYER_HEAD.getDefaultStack();
-                UUID uuid = UUID.fromString(lookup);
+                UUID uuid = PlayerUtils.toUUID(lookup, isBedrock);
                 head.setNbt(TextureUtils.nbtFromTextureValue(uuid, value, target));
 
                 self.getInventory().insertStack(head);

@@ -89,14 +89,12 @@ public class PlayerUtils {
 
     public static UUID toUUID(String target, boolean isBedrock) {
         if (isBedrock) {
-            Long xuid = Long.parseLong(target);
-            UUID a = new UUID(0,  xuid);
-            CustomPlayerHeads.getLogger().warn(a + " is a bedrock player");
-            return a;
+            long xuid = Long.parseLong(target);
+            return new UUID(0,  xuid);
         } else {
-            UUID a = UUID.fromString(target);
-            CustomPlayerHeads.getLogger().warn(a + " is a java player");
-            return UUID.fromString(target);
+            return UUID.fromString(target.replaceAll(
+                    "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"
+            ));
         }
     }
 }

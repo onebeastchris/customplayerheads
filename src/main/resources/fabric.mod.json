@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "CustomPlayerHeads",
-  "description": "A mod that drops player heads. But with Geyser support!",
+  "description": "A mod that drops player heads. But with support for skin change mods (e.g. FabricTailor), and Geyser players!",
   "authors": [
     "onebeastofchris"
   ],

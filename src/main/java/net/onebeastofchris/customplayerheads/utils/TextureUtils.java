@@ -1,4 +1,4 @@
-package net.onebeastofchris.customplayerheads.texture;
+package net.onebeastofchris.customplayerheads.utils;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,9 +8,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
-import net.onebeastofchris.customplayerheads.utils.FloodgateUtil;
 
-import java.util.Base64;
 import java.util.UUID;
 
 public class TextureUtils {
@@ -36,7 +34,7 @@ public class TextureUtils {
 
     public static NbtCompound nbtFromProfile(GameProfile profile) {
         NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(nbtCompound, profile));
+        nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile));
 
         NbtCompound displaytag = new NbtCompound();
         displaytag.putString("Name", getItalicJsonText(nameFromProfile(profile)));
@@ -66,24 +64,12 @@ public class TextureUtils {
 
     private static String getAttacker(PlayerEntity player) {
         String attackerName = player.getEntityName();
-        if (CustomPlayerHeads.config.isShowFloodgatePrefix()) {
-            if (FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName())) {
-                return FloodgateUtil.FloodgatePrefix() + attackerName;
-            }
+        if (CustomPlayerHeads.config.isShowFloodgatePrefix() && FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName())) {
+            attackerName = FloodgateUtil.FloodgatePrefix() + player.getEntityName();
         }
-        return "Killed by " + attackerName;
+        return CustomPlayerHeads.config.getLore().replace("%player%", attackerName);
     }
     public static String getItalicJsonText(String string) {
         return Text.Serializer.toJson(Text.literal(string).styled(style -> style.withItalic(true)));
-    }
-
-    public static String getEncodedTextureID(String textureID) {
-        try {
-            String toBeEncoded = "{\"textures\":{\"SKIN\":{\"url\":\"https://textures.minecraft.net/texture/" + textureID + "\"}}}";
-            return Base64.getEncoder().encodeToString(toBeEncoded.getBytes());
-        } catch (Exception e) {
-            CustomPlayerHeads.debugLog("Error while encoding textureID" + e.getMessage());
-            return null;
-        }
     }
 }

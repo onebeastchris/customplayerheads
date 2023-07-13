@@ -10,7 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
-import net.onebeastofchris.customplayerheads.texture.TextureUtils;
+import net.onebeastofchris.customplayerheads.utils.TextureUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,18 +40,6 @@ public abstract class LivingEntityMixin extends Entity {
             Executors.newSingleThreadExecutor().execute(() -> {
                 ItemStack skull = Items.PLAYER_HEAD.getDefaultStack();
 
-            /*
-            String temp = "";
-            for (Property prop : player.getGameProfile().getProperties().values()) {
-                CustomPlayerHeads.getLogger().error(prop.getName() + " " + prop.getValue());
-                if (prop.getName().equals("textures")) {
-                    temp = prop.getValue();
-                    break;
-                }
-            }
-
-            NbtCompound compound = TextureUtils.nbtFromTextureValue(player.getUuid(), temp , player.getEntityName());
-            */
                 NbtCompound compound = TextureUtils.nbtFromProfile(player.getGameProfile());
                 skull.setNbt(compound);
 

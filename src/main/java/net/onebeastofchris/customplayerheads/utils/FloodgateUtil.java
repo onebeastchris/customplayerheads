@@ -10,6 +10,7 @@ import java.util.UUID;
 public class FloodgateUtil {
 
     static boolean warned = false;
+
     public static boolean isFloodgatePresent() {
         boolean isFloodgatePresent = FabricLoader.getInstance().isModLoaded("floodgate");
         if (!isFloodgatePresent && !warned) {
@@ -26,8 +27,9 @@ public class FloodgateUtil {
         } else if (FloodgateApi.getInstance() == null) {
             CustomPlayerHeads.getLogger().info("Floodgate seems to be installed, but CustomPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
             return fallback(uuid, playerName);
-        } else
-            return FloodgateApi.getInstance().isFloodgatePlayer(uuid) && !isLinked(uuid);
+        }
+
+        return FloodgateApi.getInstance().isFloodgatePlayer(uuid) && !isLinked(uuid);
     }
 
     public static String FloodgatePrefix() {
@@ -42,16 +44,8 @@ public class FloodgateUtil {
     }
 
     public static boolean isLinked(UUID uuid) {
-        //do I need this?
-        if (!isFloodgatePresent()) {
-            return false;
-        } else if (FloodgateApi.getInstance() == null) {
-            CustomPlayerHeads.getLogger().error("Floodgate seems to be installed, but CustomPlayerHeads cannot access it. Please report this as an issue on the GitHub page!");
-            return false;
-        } else {
-            FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(uuid);
-            return floodgatePlayer.isLinked();
-        }
+        FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(uuid);
+        return floodgatePlayer.isLinked();
     }
 
     private static boolean fallback(UUID uuid, String playerName) {

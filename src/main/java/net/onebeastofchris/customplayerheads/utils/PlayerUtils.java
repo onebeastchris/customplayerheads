@@ -1,6 +1,9 @@
 package net.onebeastofchris.customplayerheads.utils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -19,7 +22,7 @@ public class PlayerUtils {
     private static final String MOJANG_UUID = "https://api.mojang.com/users/profiles/minecraft/";
 
     public static boolean isBedrockPlayer(PlayerEntity player) {
-        return FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getEntityName());
+        return FloodgateUtil.isBedrockPlayer(player.getUuid(), player.getNameForScoreboard());
     }
 
     public static String xuidLookup(String playername, PlayerEntity self) {
@@ -30,7 +33,7 @@ public class PlayerUtils {
             return bedrockXUIDmap.get(lowerCasePlayerName);
         }
 
-        var xuidJson = new WebUtil().webRequest(GEYSER_XUID_API + lowerCasePlayerName);
+        var xuidJson = CustomPlayerHeads.getWebUtil().webRequest(GEYSER_XUID_API + lowerCasePlayerName);
         try {
             return xuidJson.get("xuid").getAsString();
         } catch (Exception e) {
@@ -51,24 +54,31 @@ public class PlayerUtils {
             }
         }
     }
-    public static String getTextureID(String lookupID, boolean isBedrock) {
+
+    public static PropertyMap getTextures(String lookupID, boolean isBedrock) throws IllegalArgumentException {
+        String value, signature;
         if (isBedrock) {
-            JsonObject getJson = new WebUtil().webRequest(GEYSER_SKIN_API + lookupID);
+            JsonObject jsonObject = CustomPlayerHeads.getWebUtil().webRequest(GEYSER_SKIN_API + lookupID);
             try {
-                return getJson.get("value").getAsString();
+                value = jsonObject.get("value").getAsString();
+                signature = jsonObject.get("signature").getAsString();
             } catch (Exception e) {
-                CustomPlayerHeads.debugLog("value (geyserapi): " + e.getMessage());
-                return null;
+                throw new IllegalArgumentException("texture for " + lookupID + " not found");
             }
         } else {
-            JsonObject getJson = new WebUtil().webRequest(MOJANG_SESSIONSERVER + lookupID);
+            JsonObject jsonObject = CustomPlayerHeads.getWebUtil().webRequest(MOJANG_SESSIONSERVER + lookupID);
             try {
-                return getJson.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+                JsonObject object = jsonObject.get("properties").getAsJsonArray().get(0).getAsJsonObject();
+                value = object.get("value").getAsString();
+                signature = object.get("signature").getAsString();
             } catch (Exception e) {
-                CustomPlayerHeads.debugLog("TextureIdLookup: " + e.getMessage());
-                return null;
+                throw new IllegalArgumentException("texture for " + lookupID + " not found");
             }
         }
+
+        PropertyMap propertyMap = new PropertyMap();
+        propertyMap.put("textures", new Property("textures", value, signature));
+        return propertyMap;
     }
 
     public static String getJavaUUID(String playername) {
@@ -78,23 +88,23 @@ public class PlayerUtils {
         if (javaUUIDmap.get(lowerCasePlayerName) != null) {
             return javaUUIDmap.get(lowerCasePlayerName);
         }
-        JsonObject getJson = new WebUtil().webRequest(MOJANG_UUID + lowerCasePlayerName);
+        JsonObject getJson = CustomPlayerHeads.getWebUtil().webRequest(MOJANG_UUID + lowerCasePlayerName);
 
-        var uuid = getJson.get("id");
+        JsonElement uuid = getJson.get("id");
         if (uuid == null) {
             return null;
         }
         return uuid.getAsString();
     }
 
-    public static UUID toUUID(String target, boolean isBedrock) {
-        if (isBedrock) {
-            long xuid = Long.parseLong(target);
-            return new UUID(0,  xuid);
-        } else {
-            return UUID.fromString(target.replaceAll(
-                    "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"
-            ));
-        }
+    public static UUID fromUuidString(String target) {
+        return UUID.fromString(target.replaceAll(
+                "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"
+        ));
+    }
+
+    public static UUID uuidFromXuid(String target) {
+        long xuid = Long.parseLong(target);
+        return new UUID(0, xuid);
     }
 }

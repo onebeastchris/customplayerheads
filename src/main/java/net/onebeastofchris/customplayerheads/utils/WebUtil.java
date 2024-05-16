@@ -6,6 +6,7 @@ import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -16,8 +17,8 @@ public class WebUtil {
 
     public JsonObject webRequest(String url) {
         CustomPlayerHeads.debugLog("webRequest: " + url);
-        var client = newHttpClient();
-        var request = HttpRequest.newBuilder()
+        HttpClient client = newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
                 .timeout(Duration.ofSeconds(30))

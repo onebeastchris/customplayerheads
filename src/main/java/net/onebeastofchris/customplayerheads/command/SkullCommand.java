@@ -1,10 +1,13 @@
 package net.onebeastofchris.customplayerheads.command;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandSource;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,10 +16,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.onebeastofchris.customplayerheads.CustomPlayerHeads;
-import net.onebeastofchris.customplayerheads.utils.TextureUtils;
 import net.onebeastofchris.customplayerheads.utils.PlayerUtils;
+import net.onebeastofchris.customplayerheads.utils.TextureUtils;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -27,8 +33,8 @@ public class SkullCommand {
         return CustomPlayerHeads.config.getCommandPermissionLevel();
     }
 
-    public static LiteralCommandNode register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        return dispatcher.register(
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(
                 literal("getskull")
                         .requires(source -> source.hasPermissionLevel(getPermLevel()))
                         .then(
@@ -38,7 +44,7 @@ public class SkullCommand {
                                             return CommandSource.suggestMatching(
                                                     playerManager.getPlayerList().stream()
                                                             .filter(player -> !PlayerUtils.isBedrockPlayer(player))
-                                                            .map(PlayerEntity::getEntityName)
+                                                            .map(PlayerEntity::getNameForScoreboard)
                                                     , builder);
                                         })
                                         .executes(SkullCommand::jRun)
@@ -51,7 +57,7 @@ public class SkullCommand {
                                                     return CommandSource.suggestMatching(
                                                             playerManager.getPlayerList().stream()
                                                                     .filter(PlayerUtils::isBedrockPlayer)
-                                                                    .map(PlayerEntity::getEntityName)
+                                                                    .map(PlayerEntity::getNameForScoreboard)
                                                             , builder);
                                                 })
                                                 .executes(SkullCommand::bRun)
@@ -82,7 +88,9 @@ public class SkullCommand {
             context.getSource().sendError(Text.of("You must be a player to use this command."));
             return 0;
         } else {
-            Executors.newSingleThreadExecutor().execute(() -> getSkull(self, StringArgumentType.getString(context, "JavaPlayer"), false));
+            try (ExecutorService service = Executors.newSingleThreadExecutor()) {
+                service.execute(() -> getSkull(self, StringArgumentType.getString(context, "JavaPlayer"), false));
+            }
             return 1;
         }
     }
@@ -93,35 +101,44 @@ public class SkullCommand {
             context.getSource().sendError(Text.of("You must be a player to use this command."));
             return 0;
         } else {
-            Executors.newSingleThreadExecutor().execute(() -> getSkull(self, StringArgumentType.getString(context, "BedrockPlayer"), true));
+            try (ExecutorService service = Executors.newSingleThreadExecutor()) {
+                service.execute(() -> getSkull(self, StringArgumentType.getString(context, "BedrockPlayer"), true));
+            }
             return 1;
         }
     }
 
     public static void getSkull(PlayerEntity self, String target, boolean isBedrock) {
         String lookup;
-        if (isBedrock) {
-            lookup = PlayerUtils.xuidLookup(target, self);
-        } else {
-            lookup = PlayerUtils.getJavaUUID(target);
-        }
+        ItemStack head = Items.PLAYER_HEAD.getDefaultStack();
 
-        if (lookup != null) {
-            String value = PlayerUtils.getTextureID(lookup, isBedrock);
-            if (value != null) {
-                ItemStack head = Items.PLAYER_HEAD.getDefaultStack();
-                UUID uuid = PlayerUtils.toUUID(lookup, isBedrock);
-                head.setNbt(TextureUtils.nbtFromTextureValue(uuid, value, target));
-
-                self.getInventory().insertStack(head);
-                self.sendMessage(Text.literal("Got the head of the player: " + target).formatted(Formatting.GREEN));
-            } else {
-                if (isBedrock) {
-                    self.sendMessage(Text.literal("Failed to get the skin file of the Bedrock player. Ask " + target + " to join a Geyser + Floodgate server. ").formatted(Formatting.RED));
-                } else {
-                    self.sendMessage(Text.literal("Failed to get the skin file of the Java player.").formatted(Formatting.RED));
+        try {
+            if (isBedrock) {
+                lookup = PlayerUtils.xuidLookup(target, self);
+                if (lookup == null) {
+                    return; // already warned
                 }
-            };
+                UUID uuid = PlayerUtils.uuidFromXuid(lookup);
+
+                PropertyMap textures = PlayerUtils.getTextures(lookup, true);
+                head.set(DataComponentTypes.PROFILE, new ProfileComponent(Optional.of(target), Optional.of(uuid), textures));
+            } else {
+                UUID uuid = PlayerUtils.fromUuidString(Objects.requireNonNull(PlayerUtils.getJavaUUID(target)));
+                head.set(DataComponentTypes.PROFILE, new ProfileComponent(new GameProfile(uuid, target))); // let java server fetch texture?
+            }
+        } catch (Exception e) {
+            if (isBedrock) {
+                self.sendMessage(Text.literal("Failed to get the skin file of the Bedrock player. Ask " + target + " to join a Geyser + Floodgate server. ").formatted(Formatting.RED));
+            } else {
+                self.sendMessage(Text.literal("Failed to get the skin file of the Java player.").formatted(Formatting.RED));
+            }
+            CustomPlayerHeads.getLogger().debug(e.getMessage(), e);
+            return;
         }
+
+        head.set(DataComponentTypes.CUSTOM_NAME, TextureUtils.customNameComponent(target));
+
+        self.getInventory().insertStack(head);
+        self.sendMessage(Text.literal("Got the head of the player: " + target).formatted(Formatting.GREEN));
     }
 }

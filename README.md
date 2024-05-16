@@ -5,7 +5,7 @@
 ## CustomPlayerHeads
 Small Fabric mod to drop player heads upon player death - or get them via a command - that's compatible with Bedrock players joined through Geyser, or other mods changing the skin while in-game; e.g. FabricTailor.
 
-## Supported versions: 1.19.2-1.20.1 Fabric
+## Supported versions: 1.20.6 Fabric
 Availble on Modrinth: 
 #### https://modrinth.com/mod/customplayerheads
 
@@ -23,6 +23,3 @@ Because of https://bugs.mojang.com/browse/MC-174496, it is recommended to use a 
 
 ### Left to be added:
 Nothing further planned for now! I am open for suggestions though ^^
-
-### Availble on Modrinth: https://modrinth.com/mod/customplayerheads
-Huge thanks to Jens, the Fabric discord, and Elysian members for helping me test and develop this mod!

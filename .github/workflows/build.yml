@@ -22,13 +22,13 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build
           gradle-home-cache-cleanup: true
 
       - name: Publish to Modrinth
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         if: ${{ success() && github.repository == 'onebeastchris/customplayerheads' && github.ref_name == 'master' }}
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

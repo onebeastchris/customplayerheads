@@ -85,7 +85,7 @@ modrinth {
 	versionNumber.set(project.version as String)
 	versionType.set("release")
 	uploadFile.set(remapJar)
-	gameVersions = ["1.20.5", "1.20.6"]
+	gameVersions = ["1.20.5", "1.20.6", "1.21"]
 	loaders = ["fabric"]
 
 	syncBodyFrom.set(rootProject.file("README.md").text)
